@@ -53,7 +53,7 @@ public class Main {
 
     public static double sinTaylor(double x){
         double sum = x;
-        for (int i = 1; i <= 100; i++){
+        for (int i = 1; i <= 10; i++){
             int y = i*2+1;
             double licznik = pow(x, y);
             double mianownik = 1;
@@ -101,7 +101,7 @@ public class Main {
 
     public static double sinTaylorReverse(double x){
         double sum = x;
-        for (int i = 100; i > 0; i--){
+        for (int i = 10; i > 0; i--){
             int y = i*2+1;
             double licznik = pow(x, y);
             double mianownik = 1;
@@ -123,14 +123,14 @@ public class Main {
     public static double arctgTaylor(double x){
         double sum = 0;
         if (-1 < x && x < 1){
-            for (int i = 0; i < 100; i++){
+            for (int i = 0; i < 10; i++){
                 double licznik = pow(x, 2*i + 1);
                 double mianownik = 2*i + 1;
 //                System.out.println("pow = " + pow(-1, i));
                 sum += pow(-1, i) * licznik / mianownik;
             }
         } else {
-            for (int i = 0; i <= 100; i++){
+            for (int i = 0; i <= 10; i++){
                 double licznik = 1;
                 double mianownik = (2*i + 1) * pow(x, 2*i + 1);
                 sum += pow(-1, i) * licznik / mianownik;
@@ -148,11 +148,12 @@ public class Main {
     } //end method
 
     public static double arctgTaylor2(double x){
-        double sum = x;
+        double sum;
         double prev;
         if (-1 < x && x < 1){
+            sum = x;
             prev = x;
-            for (int i = 1; i < 100; i++){
+            for (int i = 1; i < 10; i++){
                 double prevMian = 2*(i-1)+1;
                 double currMian = 2*i+1;
                 double delta = pow(x, 2) * prevMian / currMian;
@@ -161,11 +162,12 @@ public class Main {
                 prev = curr;
             }
         } else {
+            sum = 0;
             prev = 0;
-            for (int i = 0; i <= 100; i++){
+            for (int i = 0; i <= 10; i++){
                 if (i == 0) {
-                    double mianownik = (2*i + 1) * pow(x, 2*i + 1);
-                    double curr = 1 / mianownik;
+//                    double mianownik = (2*i + 1) * pow(x, 2*i + 1);
+                    double curr = 1 / x;
                     sum += curr;
                     prev = curr;
                     System.out.println(curr);
@@ -175,16 +177,18 @@ public class Main {
                     double delta = prevY / (currY * pow(x, 2));
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-                    System.out.println(curr);
+                    System.out.println(pow(-1, i+1)* curr);
+//                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
 
             }
 
             if (x <= -1) {
-                sum =  (-1) * Math.PI / 2 - sum;
+                System.out.println("pi: " + (-1) * Math.PI / 2);
+                sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
-                sum = Math.PI / 2 - sum;
+                sum = (Math.PI / 2) - sum;
             }
 
         }
@@ -196,14 +200,14 @@ public class Main {
     public static double arctgTaylorReverse(double x){
         double sum = 0;
         if (-1 < x && x < 1){
-            for (int i = 99; i >= 0; i--){
+            for (int i = 9; i >= 0; i--){
                 int y = 2*i + 1;
                 double licznik = pow(x, y);
                 double mianownik = 2*i + 1;
                 sum += pow(-1, i) * (licznik / mianownik);
             }
         } else {
-            for (int i = 99; i >= 0; i--){
+            for (int i = 9; i >= 0; i--){
                 double licznik = 1;
                 int y = 2*i + 1;
                 double mianownik = (2*i + 1) * pow(x, y);
@@ -225,7 +229,7 @@ public class Main {
     public static double arctgTaylorReverse2(double x){
         double sum = 0;
         if (-1 < x && x < 1){
-            for (int i = 99; i >= 0; i--){
+            for (int i = 9; i >= 0; i--){
                 int y = 2*i + 1;
                 double licznik = pow(x, y);
                 double mianownik = 2*i + 1;
@@ -233,7 +237,7 @@ public class Main {
                 sum += pow(-1, i) * (licznik / mianownik);
             }
         } else {
-            for (int i = 99; i >= 0; i--){
+            for (int i = 9; i >= 0; i--){
                 double licznik = 1;
                 int y = 2*i + 1;
                 double mianownik = (2*i + 1) * pow(x, y);
