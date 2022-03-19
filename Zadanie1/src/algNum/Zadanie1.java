@@ -1,12 +1,125 @@
 package algNum;
 
-public class Main {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class Zadanie1 {
+
 
     public static void main(String[] args) {
 
+        double[] arr2 = new double[200];
+        double a = -1;
+        for (int i = 0; i < arr2.length; i++){
+            arr2[i] = Math.round(a * 100.0) /100.0;
+            a += 0.01;
+        }
+        System.out.println(Arrays.toString(arr2));
 
-//        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
-        double[] arr = {0.5};
+
+        double[] sinArr = countArraySinTaylor(arr2);
+        double[] arctgArr = new double[200];
+
+//        double[] sinArctgArr = new double[200];
+        //+ tablice błędów dla SinArctg
+
+        for (int i = 0; i < arr2.length; i++){
+//            sinArr[i][0] = arr2[i];
+//            sinArr[i][1] = sin
+        }
+
+
+
+    }
+
+    public static double[] countArraySinTaylorBackwards(double[] args){
+        double[] sinArr = new double[args.length];
+
+//        ArrayList<Double> ar = new ArrayList<>(Arrays.asList(args));
+//        ar.stream().map(e -> e*e).filter(e -> e < 10).collect(Collectors.toList());
+
+        for (int i = 0; i < sinArr.length; i++){
+            sinArr[i] = sinTaylorReverse(args[i]);
+        }
+
+        return sinArr;
+    }
+
+    public static double[] countArraySinTaylor(double[] args){
+        double[] sinArr = new double[args.length];
+
+        for (int i = 0; i < sinArr.length; i++){
+            sinArr[i] = sinTaylor(args[i]);
+        }
+
+        return sinArr;
+    }
+
+    public static double[] countArraySinTaylorFromPrev(double[] args){
+        double[] sinArr = new double[args.length];
+
+        for (int i = 0; i < sinArr.length; i++){
+            sinArr[i] = sinTaylor2(args[i]);
+        }
+
+        return sinArr;
+    }
+
+    public static double[] countArraySinTaylorFromPrevBackwards(double[] args){
+        double[] sinArr = new double[args.length];
+
+        for (int i = 0; i < sinArr.length; i++){
+            sinArr[i] = sinTaylorReverse2(args[i]);
+        }
+
+        return sinArr;
+    }
+
+    public static double[] countArrayAtanTaylor(double[] args){
+        double[] atanArr = new double[args.length];
+
+        for (int i = 0; i < atanArr.length; i++){
+            atanArr[i] = arctgTaylor(args[i]);
+        }
+
+        return atanArr;
+    }
+
+    public static double[] countArrayAtanTaylorBackwards(double[] args){
+        double[] atanArr = new double[args.length];
+
+        for (int i = 0; i < atanArr.length; i++){
+            atanArr[i] = arctgTaylorReverse(args[i]);
+        }
+
+        return atanArr;
+    }
+
+    public static double[] countArrayAtanTaylorFromPrev(double[] args){
+        double[] atanArr = new double[args.length];
+
+        for (int i = 0; i < atanArr.length; i++){
+            atanArr[i] = arctgTaylor2(args[i]);
+        }
+
+        return atanArr;
+    }
+
+    public static double[] countArrayAtanTaylorFromPrevBackwards(double[] args){
+        double[] atanArr = new double[args.length];
+
+        for (int i = 0; i < atanArr.length; i++){
+            atanArr[i] = arctgTaylorReverse2(args[i]);
+        }
+
+        return atanArr;
+    }
+
+    public static void printSampleData(){
+
+        double[] arr = {0.5, Math.PI/4, 1.5, -1.5, 2, 0.1};
+//        double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor2(val);
             double arctgT = arctgTaylor2(val);
@@ -47,8 +160,6 @@ public class Main {
 
 
         }
-
-
     }
 
     public static double sinTaylor(double x){
@@ -56,10 +167,11 @@ public class Main {
         for (int i = 1; i <= 10; i++){
             int y = i*2+1;
             double licznik = pow(x, y);
-            double mianownik = 1;
-            for (int j = 1; j <= i*2 + 1; j++){
-                mianownik *= j;
-            }
+            long mianownik = silnia(y);
+//            double mianownik = 1;
+//            for (int j = 1; j <= i*2 + 1; j++){
+//                mianownik *= j;
+//            }
 
 //            System.out.println("x^" + y + " / " + y + "!  =  " + licznik + "/" + mianownik);
 
@@ -122,11 +234,13 @@ public class Main {
     public static double sinTaylorReverse2(double x){ //ok
         double sum = 0;
         double prev = 0;
-        for (int i = 5; i >= 0; i--){
-            if (i == 5){
+        for (int i = 9; i >= 0; i--){
+            if (i == 9){
                 int y = 2*i +1;
                 double licznik = pow(x, y);
-                double mianownik = silnia(y);
+                long mianownik = silnia(y);
+                System.out.println(licznik);
+                System.out.println(mianownik);
 //                System.out.println("silnia " + y + " = " + mianownik);
                 sum += pow(-1, y) *  (licznik/mianownik);
                 prev = licznik/mianownik;
@@ -334,8 +448,8 @@ public class Main {
         }
     }
 
-    public static double silnia(int n){
-        int result = 1;
+    public static long silnia(int n){
+        long result = 1;
         for (int i = n; i > 0; i--){
             result *= i;
         }
