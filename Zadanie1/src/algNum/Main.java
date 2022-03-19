@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
-//        double[] arr = {0.5};
+//        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
+        double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor2(val);
             double arctgT = arctgTaylor2(val);
@@ -26,7 +26,7 @@ public class Main {
                     val, val, mathSinMathAtan));
             System.out.println(String.format("Różnica: %.16f", diff));
             double sinT_rev = sinTaylorReverse(val);
-            double arctgT_rev = arctgTaylorReverse(val);
+            double arctgT_rev = arctgTaylorReverse2(val);
             double sinTarctgT_rev = sinT_rev * arctgT_rev;
             double diff_2 = Math.abs(sinTarctgT_rev - mathSinMathAtan);
             System.out.println(String.format("***Reverse***\nval = %.4f", val));
@@ -206,7 +206,8 @@ public class Main {
                 double mianownik = 2*i + 1;
                 sum += pow(-1, i) * (licznik / mianownik);
             }
-        } else {
+        }
+        else {
             for (int i = 9; i >= 0; i--){
                 double licznik = 1;
                 int y = 2*i + 1;
@@ -227,32 +228,66 @@ public class Main {
     } //end method
 
     public static double arctgTaylorReverse2(double x){
-        double sum = 0;
+        double sum;
+        double prev;
         if (-1 < x && x < 1){
-            for (int i = 9; i >= 0; i--){
-                int y = 2*i + 1;
-                double licznik = pow(x, y);
-                double mianownik = 2*i + 1;
-//                System.out.println("pow = " + pow(-1, i));
-                sum += pow(-1, i) * (licznik / mianownik);
+            sum = 0;
+            prev = 0;
+            for (int i = 4; i > 0; i--){
+                if (i == 4) {
+                    int y = 2*i + 1;
+                    double licznik = pow(x, y);
+                    double mianownik = 2*i + 1;
+                    sum += pow(-1, i) * (licznik / mianownik);
+                    prev = licznik / mianownik;
+                    System.out.println(licznik / mianownik);
+                }
+                else {
+                    double prevMian = 2*(i+1)+1;
+                    double currMian = 2*i+1;
+                    double delta = prevMian / (currMian * pow(x, 2));
+                    double curr = prev * delta;
+                    sum += pow(-1, i) * curr;
+                    prev = curr;
+                    System.out.println(curr);
+                }
+
             }
-        } else {
-            for (int i = 9; i >= 0; i--){
-                double licznik = 1;
-                int y = 2*i + 1;
-                double mianownik = (2*i + 1) * pow(x, y);
-                sum += pow(-1, i) * (licznik / mianownik);
+
+            sum += x;
+        }
+        else {
+            sum = 0;
+            prev = 0;
+            for (int i = 0; i <= 10; i++){
+                if (i == 0) {
+//                    double mianownik = (2*i + 1) * pow(x, 2*i + 1);
+                    double curr = 1 / x;
+                    sum += curr;
+                    prev = curr;
+                    System.out.println(curr);
+                } else {
+                    double currY = 2*i + 1;
+                    double prevY = 2*(i-1) + 1;
+                    double delta = prevY / (currY * pow(x, 2));
+                    double curr = prev * delta;
+                    sum += pow(-1, i) * curr;
+                    System.out.println(pow(-1, i+1)* curr);
+//                    System.out.println("prev = " + prev + "\n delta = " + delta);
+                    prev = curr;
+                }
+
             }
 
             if (x <= -1) {
-                sum =  (-1) * Math.PI / 2 - sum;
+                System.out.println("pi: " + (-1) * Math.PI / 2);
+                sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
-                sum = Math.PI / 2 - sum;
+                sum = (Math.PI / 2) - sum;
             }
 
         }
 
-//        return sum+1;
         return sum;
     } //end method
 
