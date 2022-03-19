@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
-//        double[] arr = {0.5};
+//        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
+        double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor2(val);
             double arctgT = arctgTaylor2(val);
@@ -25,7 +25,7 @@ public class Main {
                     val, val, sinTarctgT,
                     val, val, mathSinMathAtan));
             System.out.println(String.format("Różnica: %.16f", diff));
-            double sinT_rev = sinTaylorReverse(val);
+            double sinT_rev = sinTaylorReverse2(val);
             double arctgT_rev = arctgTaylorReverse2(val);
             double sinTarctgT_rev = sinT_rev * arctgT_rev;
             double diff_2 = Math.abs(sinTarctgT_rev - mathSinMathAtan);
@@ -119,6 +119,35 @@ public class Main {
         return sum;
     } //end method
 
+    public static double sinTaylorReverse2(double x){ //ok
+        double sum = 0;
+        double prev = 0;
+        for (int i = 5; i >= 0; i--){
+            if (i == 5){
+                int y = 2*i +1;
+                double licznik = pow(x, y);
+                double mianownik = silnia(y);
+//                System.out.println("silnia " + y + " = " + mianownik);
+                sum += pow(-1, y) *  (licznik/mianownik);
+                prev = licznik/mianownik;
+//                System.out.println(prev);
+            } else {
+                int y = i*2+1;
+                double delta = ((y+2) * (y+1)) / pow(x, 2);
+                double curr = prev * delta;
+//                System.out.println(curr);
+                if (i % 2 == 0){
+                    sum += curr;
+                } else {
+                    sum -= curr;
+                }
+                prev = curr;
+            }
+        }
+
+        return sum;
+    } //end method
+
 
     public static double arctgTaylor(double x){
         double sum = 0;
@@ -170,14 +199,14 @@ public class Main {
                     double curr = 1 / x;
                     sum += curr;
                     prev = curr;
-                    System.out.println(curr);
+//                    System.out.println(curr);
                 } else {
                     double currY = 2*i + 1;
                     double prevY = 2*(i-1) + 1;
                     double delta = prevY / (currY * pow(x, 2));
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-                    System.out.println(pow(-1, i+1)* curr);
+//                    System.out.println(pow(-1, i+1)* curr);
 //                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
@@ -185,7 +214,7 @@ public class Main {
             }
 
             if (x <= -1) {
-                System.out.println("pi: " + (-1) * Math.PI / 2);
+//                System.out.println("pi: " + (-1) * Math.PI / 2);
                 sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
                 sum = (Math.PI / 2) - sum;
@@ -240,7 +269,7 @@ public class Main {
                     double mianownik = 2*i + 1;
                     sum += pow(-1, i) * (licznik / mianownik);
                     prev = licznik / mianownik;
-                    System.out.println(licznik / mianownik);
+//                    System.out.println(licznik / mianownik);
                 }
                 else {
                     double prevMian = 2*(i+1)+1;
@@ -249,7 +278,7 @@ public class Main {
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
                     prev = curr;
-                    System.out.println(curr);
+//                    System.out.println(curr);
                 }
 
             }
@@ -265,14 +294,14 @@ public class Main {
                     double curr = 1 / (y * pow(x, y));
                     sum += pow(-1, i) * curr;
                     prev = curr;
-                    System.out.println(curr);
+//                    System.out.println(curr);
                 } else {
                     double currY = 2*i + 1;
                     double prevY = 2*(i+1) + 1;
                     double delta = (prevY / currY) * pow(x, 2);
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-                    System.out.println(curr);
+//                    System.out.println(curr);
 //                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
@@ -280,7 +309,7 @@ public class Main {
             }
 
             if (x <= -1) {
-                System.out.println("pi: " + (-1) * Math.PI / 2);
+//                System.out.println("pi: " + (-1) * Math.PI / 2);
                 sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
                 sum = (Math.PI / 2) - sum;
@@ -303,5 +332,13 @@ public class Main {
 
             return wynik;
         }
+    }
+
+    public static double silnia(int n){
+        int result = 1;
+        for (int i = n; i > 0; i--){
+            result *= i;
+        }
+        return result;
     }
 } //end class
