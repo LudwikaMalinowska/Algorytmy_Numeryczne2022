@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-//        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
-        double[] arr = {0.5};
+        double[] arr = {0.5, Math.PI/4, 1.5, -1.5};
+//        double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor2(val);
             double arctgT = arctgTaylor2(val);
@@ -259,20 +259,20 @@ public class Main {
         else {
             sum = 0;
             prev = 0;
-            for (int i = 0; i <= 10; i++){
-                if (i == 0) {
-//                    double mianownik = (2*i + 1) * pow(x, 2*i + 1);
-                    double curr = 1 / x;
-                    sum += curr;
+            for (int i = 4; i >= 0; i--){
+                if (i == 4) {
+                    int y = 2*i +1;
+                    double curr = 1 / (y * pow(x, y));
+                    sum += pow(-1, i) * curr;
                     prev = curr;
                     System.out.println(curr);
                 } else {
                     double currY = 2*i + 1;
-                    double prevY = 2*(i-1) + 1;
-                    double delta = prevY / (currY * pow(x, 2));
+                    double prevY = 2*(i+1) + 1;
+                    double delta = (prevY / currY) * pow(x, 2);
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-                    System.out.println(pow(-1, i+1)* curr);
+                    System.out.println(curr);
 //                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
