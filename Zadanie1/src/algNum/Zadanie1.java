@@ -1,37 +1,84 @@
 package algNum;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 public class Zadanie1 {
 
 
     public static void main(String[] args) {
 
-        double[] arr2 = new double[200];
-        double a = -1;
-        for (int i = 0; i < arr2.length; i++){
-            arr2[i] = Math.round(a * 100.0) /100.0;
-            a += 0.01;
-        }
-        System.out.println(Arrays.toString(arr2));
-
-
-        double[] sinArr = countArraySinTaylor(arr2);
-        double[] arctgArr = new double[200];
-
-//        double[] sinArctgArr = new double[200];
-        //+ tablice błędów dla SinArctg
-
-        for (int i = 0; i < arr2.length; i++){
-//            sinArr[i][0] = arr2[i];
-//            sinArr[i][1] = sin
+        double[] arrayX = new double[1_000_000];
+        double start = - Math.PI ;
+        double end = Math.PI;
+        double len = Math.PI;
+        arrayX[0] = start;
+        double df = (end - start) / arrayX.length;
+        System.out.println(arrayX[0]);
+        for (int i = 1; i < arrayX.length; i++){
+            arrayX[i] = start + i * df;
         }
 
-        System.out.println(arctgTaylorReverse2(0.0));
 
+        double[] arr1 = countMistakeSinTAtanT(arrayX);
+        double[] arr2 = countMistakeSinTAtanTBackwards(arrayX);
+        double[] arr3 = countMistakeSinTAtanTFromPrev(arrayX);
+        double[] arr4 = countMistakeSinTAtanTFromPrevBackwards(arrayX);
+
+        double avgErr1 = countAvg(arr1);
+        double avgErr2 = countAvg(arr2);
+        double avgErr3 = countAvg(arr3);
+        double avgErr4 = countAvg(arr4);
+
+        System.out.println("Sredni blad dla metody 1: " + avgErr1);
+        System.out.println("Sredni blad dla metody 2: " + avgErr2);
+        System.out.println("Sredni blad dla metody 3: " + avgErr3);
+        System.out.println("Sredni blad dla metody 4: " + avgErr4);
+
+        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
     }
+
+    public static void saveToCsv(double[] arrX, double[] arr1, double[] arr2,
+                                 double[] arr3, double[] arr4){
+        StringBuilder sb = new StringBuilder();
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File("test.csv")))) {
+//            double [] arr1, arr2, arr3; // zmienne
+            for (int i = 0; i < arr1.length; i++){
+                sb.append(arrX[i]);
+                sb.append(",");
+                sb.append(arr1[i]);
+                sb.append(",");
+                sb.append(arr2[i]);
+                sb.append(",");
+                sb.append(arr3[i]);
+                sb.append(",");
+                sb.append(arr4[i]);
+
+                bw.write(sb.toString() + "\n");
+//                bw.writeLine(sb.toString());
+//                sb.clear();
+                sb.setLength(0);
+            }
+        }catch (IOException e){
+            System.out.println(e);
+        }
+    }
+
+    public static double countAvg(double[] arr){
+        double sum = 0.0;
+        for (int i = 0; i < arr.length; i++){
+            sum += arr[i];
+        }
+
+        double avg = sum / arr.length;
+        return avg;
+    }
+
 
     public static double[] countArraySinTaylorBackwards(double[] args){
         double[] sinArr = new double[args.length];
@@ -194,7 +241,7 @@ public class Zadanie1 {
 
     public static void printSampleData(){
 
-        double[] arr = {0.5, Math.PI/4, 1.5, -1.5, 2, 0.1};
+        double[] arr = {0.5, Math.PI};
 //        double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor2(val);

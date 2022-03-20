@@ -17,16 +17,26 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    private double array[] = new double[200];
+    private double array[] = new double[1_000];
 
     {
 
-        double a = -1;
-        for (int i = 0; i < array.length; i++){
-            array[i] = Math.round(a * 100.0) /100.0;
-            a += 0.01;
+        double start = - Math.PI ;
+        double end = Math.PI;
+        double len = Math.PI;
+        array[0] = start;
+        double df = (end - start) / array.length;
+        System.out.println(array[0]);
+        double a = -3.14;
+        for (int i = 1; i < array.length; i++){
+//            array[i] = Math.round(a * 100.0) /100.0;
+//            a += 0.01;
+            array[i] = start + i * df;
+//            System.out.println(array[i]);
         }
     }
+
+
 
 
 
@@ -141,6 +151,7 @@ public class Controller implements Initializable {
             series.getData().add(new XYChart.Data<Double, Double>(this.array[i], results[i]));
         }
 
+
         return series;
     }
 
@@ -156,5 +167,6 @@ public class Controller implements Initializable {
         }
         series.setName("Mój super wykres");
         chart.getData().add(series);
+        chart.setCreateSymbols(false);
     }
 }
