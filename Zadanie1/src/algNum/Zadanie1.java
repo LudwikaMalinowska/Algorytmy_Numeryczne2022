@@ -466,15 +466,10 @@ public class Zadanie1 {
                 else {
                     double prevMian = 2*(i+1)+1;
                     double currMian = 2*i+1;
-                    double delta = (x == 0.0) ? prevMian / currMian :
-                            prevMian / (currMian * pow(x, 2));
+                    double delta = prevMian / (currMian * pow(x, 2));
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
                     prev = curr;
-                    System.out.println("prevMian: " + prevMian);
-                    System.out.println("currMian: " + currMian);
-                    System.out.println("delta: " + delta);
-                    System.out.println("curr: " + curr);
                 }
 
             }

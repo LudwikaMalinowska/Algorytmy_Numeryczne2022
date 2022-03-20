@@ -112,6 +112,26 @@ public class Controller implements Initializable {
     @FXML
     void onClickButton7(ActionEvent event) {
         chart.getData().clear();
+
+        double[] results1 = Zadanie1.countMistakeSinTAtanT(this.array);
+        XYChart.Series<Double, Double> series1 = countSeriesFromData(results1);
+        series1.setName("Błąd sinT * atanT");
+        chart.getData().add(series1);
+
+        double[] results2 = Zadanie1.countMistakeSinTAtanTBackwards(this.array);
+        XYChart.Series<Double, Double> series2 = countSeriesFromData(results2);
+        series2.setName("Błąd sinT * atanT od końca");
+        chart.getData().add(series2);
+
+        double[] results3 = Zadanie1.countMistakeSinTAtanTFromPrev(this.array);
+        XYChart.Series<Double, Double> series3 = countSeriesFromData(results3);
+        series3.setName("Błąd sinT * atanT z poprzedniego elementu");
+        chart.getData().add(series3);
+
+        double[] results4 = Zadanie1.countMistakeSinTAtanTFromPrevBackwards(this.array);
+        XYChart.Series<Double, Double> series4 = countSeriesFromData(results4);
+        series4.setName("Błąd sinT * atanT z poprzedniego elementu od końca");
+        chart.getData().add(series4);
     }
 
     private XYChart.Series<Double, Double> countSeriesFromData(double[] results){
