@@ -12,6 +12,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -56,36 +57,71 @@ public class Controller implements Initializable {
     @FXML
     void onClickButton2(ActionEvent event) {
         chart.getData().clear();
-        XYChart.Series<Double, Double> series = new XYChart.Series<>();
-        series.getData().add(0, new XYChart.Data<Double, Double>(0.0, 2.0));
-        series.getData().add(1, new XYChart.Data<Double, Double>(-1.0, 1.0));
-        series.getData().add(2, new XYChart.Data<Double, Double>(-2.0, 2.0));
-        series.getData().add(3, new XYChart.Data<Double, Double>(-3.0, 1.0));
-        series.setName("Mój super wykres 2");
+        double[] results = Zadanie1.countMistakeSinTAtanT(this.array);
+        XYChart.Series<Double, Double> series = countSeriesFromData(results);
+        series.setName("Błąd sinT * atanT");
+
         chart.getData().add(series);
-
-        XYChart.Series<Double, Double> series2 = new XYChart.Series<>();
-        series2.getData().add(0, new XYChart.Data<Double, Double>(0.0, -1.0));
-        series2.getData().add(1, new XYChart.Data<Double, Double>(-1.0, -2.0));
-        series2.getData().add(2, new XYChart.Data<Double, Double>(-2.0, -1.0));
-        series2.getData().add(3, new XYChart.Data<Double, Double>(-3.0, -2.0));
-        series2.setName("Mój super wykres 3a");
-        chart.getData().add(series2);
-
-
     }
 
     @FXML
     void onClickButton3(ActionEvent event) {
         chart.getData().clear();
-        XYChart.Series<Double, Double> series = new XYChart.Series<>();
-        series.getData().add(0, new XYChart.Data<Double, Double>(0.0, -1.0));
-        series.getData().add(1, new XYChart.Data<Double, Double>(-1.0, -2.0));
-        series.getData().add(2, new XYChart.Data<Double, Double>(-2.0, -1.0));
-        series.getData().add(3, new XYChart.Data<Double, Double>(-3.0, -2.0));
-        series.setName("Mój super wykres 3");
-        chart.getData().add(series);
+        double[] results = Zadanie1.countMistakeSinTAtanTBackwards(this.array);
+        XYChart.Series<Double, Double> series = countSeriesFromData(results);
 
+        series.setName("Błąd sinT * atanT liczone od końca");
+        chart.getData().add(series);
+    }
+
+    @FXML
+    void onClickButton4(ActionEvent event) {
+        chart.getData().clear();
+        double[] results = Zadanie1.countMistakeSinTAtanTFromPrev(this.array);
+        XYChart.Series<Double, Double> series = countSeriesFromData(results);
+
+        series.setName("Błąd sinT * atanT liczone z poprzedniego elementu");
+        chart.getData().add(series);
+    }
+
+    @FXML
+    void onClickButton5(ActionEvent event) {
+        chart.getData().clear();
+        double[] results = Zadanie1.countMistakeSinTAtanTFromPrevBackwards(this.array);
+        XYChart.Series<Double, Double> series = countSeriesFromData(results);
+
+        series.setName("Błąd sinT * atanT z poprzedniego elementu od końca");
+        chart.getData().add(series);
+    }
+
+    @FXML
+    void onClickButton6(ActionEvent event) {
+        chart.getData().clear();
+
+        double[] results1 = Zadanie1.countMistakeSinTAtanT(this.array);
+        XYChart.Series<Double, Double> series1 = countSeriesFromData(results1);
+        series1.setName("Błąd sinT * atanT");
+        chart.getData().add(series1);
+
+        double[] results2 = Zadanie1.countMistakeSinTAtanTFromPrevBackwards(this.array);
+        XYChart.Series<Double, Double> series2 = countSeriesFromData(results2);
+        series2.setName("Błąd sinT * atanT z poprzedniego elementu od końca");
+        chart.getData().add(series2);
+    }
+
+    @FXML
+    void onClickButton7(ActionEvent event) {
+        chart.getData().clear();
+    }
+
+    private XYChart.Series<Double, Double> countSeriesFromData(double[] results){
+        XYChart.Series<Double, Double> series = new XYChart.Series<>();
+        for (int i = 0; i < results.length; i++){
+//            if (Double.isNaN(results[i])) continue;
+            series.getData().add(new XYChart.Data<Double, Double>(this.array[i], results[i]));
+        }
+
+        return series;
     }
 
 

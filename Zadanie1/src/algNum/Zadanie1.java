@@ -29,7 +29,7 @@ public class Zadanie1 {
 //            sinArr[i][1] = sin
         }
 
-
+        System.out.println(arctgTaylorReverse2(0.0));
 
     }
 
@@ -44,6 +44,82 @@ public class Zadanie1 {
         }
 
         return sinArr;
+    }
+
+    //1.
+    public static double[] countMistakeSinTAtanT(double[] args){
+        double[] sinAtanMistakeArr = new double[args.length];
+
+        for (int i = 0; i < sinAtanMistakeArr.length; i++){
+            double val = args[i];
+            double sinT = sinTaylor(val);
+            double arctgT = arctgTaylor(val);
+            double sinTarctgT = sinT * arctgT;
+            double mathSinMathAtan = Math.sin(val) * Math.atan(val);
+
+            double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+
+            sinAtanMistakeArr[i] = diff;
+        }
+
+        return sinAtanMistakeArr;
+    }
+
+    //2.
+    public static double[] countMistakeSinTAtanTBackwards(double[] args){
+        double[] sinAtanMistakeArr = new double[args.length];
+
+        for (int i = 0; i < sinAtanMistakeArr.length; i++){
+            double val = args[i];
+            double sinT = sinTaylorReverse(val);
+            double arctgT = arctgTaylorReverse(val);
+            double sinTarctgT = sinT * arctgT;
+            double mathSinMathAtan = Math.sin(val) * Math.atan(val);
+
+            double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+
+            sinAtanMistakeArr[i] = diff;
+        }
+
+        return sinAtanMistakeArr;
+    }
+
+    //3.
+    public static double[] countMistakeSinTAtanTFromPrev(double[] args){
+        double[] sinAtanMistakeArr = new double[args.length];
+
+        for (int i = 0; i < sinAtanMistakeArr.length; i++){
+            double val = args[i];
+            double sinT = sinTaylor2(val);
+            double arctgT = arctgTaylor2(val);
+            double sinTarctgT = sinT * arctgT;
+            double mathSinMathAtan = Math.sin(val) * Math.atan(val);
+
+            double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+
+            sinAtanMistakeArr[i] = diff;
+        }
+
+        return sinAtanMistakeArr;
+    }
+
+    //4.
+    public static double[] countMistakeSinTAtanTFromPrevBackwards(double[] args){
+        double[] sinAtanMistakeArr = new double[args.length];
+
+        for (int i = 0; i < sinAtanMistakeArr.length; i++){
+            double val = args[i];
+            double sinT = sinTaylorReverse2(val);
+            double arctgT = arctgTaylorReverse2(val);
+            double sinTarctgT = sinT * arctgT;
+            double mathSinMathAtan = Math.sin(val) * Math.atan(val);
+
+            double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+
+            sinAtanMistakeArr[i] = diff;
+        }
+
+        return sinAtanMistakeArr;
     }
 
     public static double[] countArraySinTaylor(double[] args){
@@ -232,6 +308,7 @@ public class Zadanie1 {
     } //end method
 
     public static double sinTaylorReverse2(double x){ //ok
+        if (x == 0.0) return 0.0;
         double sum = 0;
         double prev = 0;
         for (int i = 9; i >= 0; i--){
@@ -239,8 +316,8 @@ public class Zadanie1 {
                 int y = 2*i +1;
                 double licznik = pow(x, y);
                 long mianownik = silnia(y);
-                System.out.println(licznik);
-                System.out.println(mianownik);
+//                System.out.println(licznik);
+//                System.out.println(mianownik);
 //                System.out.println("silnia " + y + " = " + mianownik);
                 sum += pow(-1, y) *  (licznik/mianownik);
                 prev = licznik/mianownik;
@@ -371,6 +448,7 @@ public class Zadanie1 {
     } //end method
 
     public static double arctgTaylorReverse2(double x){
+        if (x == 0.0) return 0.0;
         double sum;
         double prev;
         if (-1 < x && x < 1){
@@ -388,11 +466,15 @@ public class Zadanie1 {
                 else {
                     double prevMian = 2*(i+1)+1;
                     double currMian = 2*i+1;
-                    double delta = prevMian / (currMian * pow(x, 2));
+                    double delta = (x == 0.0) ? prevMian / currMian :
+                            prevMian / (currMian * pow(x, 2));
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
                     prev = curr;
-//                    System.out.println(curr);
+                    System.out.println("prevMian: " + prevMian);
+                    System.out.println("currMian: " + currMian);
+                    System.out.println("delta: " + delta);
+                    System.out.println("curr: " + curr);
                 }
 
             }
