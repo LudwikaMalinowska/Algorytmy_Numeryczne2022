@@ -20,7 +20,6 @@ public class Controller implements Initializable {
     private double array[] = new double[1_000];
 
     {
-
         double start = - Math.PI ;
         double end = Math.PI;
         double len = Math.PI;
@@ -29,10 +28,7 @@ public class Controller implements Initializable {
         System.out.println(array[0]);
         double a = -3.14;
         for (int i = 1; i < array.length; i++){
-//            array[i] = Math.round(a * 100.0) /100.0;
-//            a += 0.01;
             array[i] = start + i * df;
-//            System.out.println(array[i]);
         }
     }
 

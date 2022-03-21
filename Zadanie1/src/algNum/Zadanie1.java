@@ -3,9 +3,6 @@ package algNum;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.io.IOException;
 
 public class Zadanie1 {
@@ -40,7 +37,7 @@ public class Zadanie1 {
         System.out.println("Sredni blad dla metody 3: " + avgErr3);
         System.out.println("Sredni blad dla metody 4: " + avgErr4);
 
-//        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
+        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
     }
 
     public static void saveToCsv(double[] arrX, double[] arr1, double[] arr2,
@@ -70,8 +67,6 @@ public class Zadanie1 {
                 sb.append(arr4[i]);
 
                 bw.write(sb.toString() + "\n");
-//                bw.writeLine(sb.toString());
-//                sb.clear();
                 sb.setLength(0);
             }
         }catch (IOException e){
@@ -178,65 +173,6 @@ public class Zadanie1 {
         return sinArr;
     }
 
-    public static double[] countArraySinTaylorFromPrev(double[] args){
-        double[] sinArr = new double[args.length];
-
-        for (int i = 0; i < sinArr.length; i++){
-            sinArr[i] = sinTaylor2(args[i]);
-        }
-
-        return sinArr;
-    }
-
-    public static double[] countArraySinTaylorFromPrevBackwards(double[] args){
-        double[] sinArr = new double[args.length];
-
-        for (int i = 0; i < sinArr.length; i++){
-            sinArr[i] = sinTaylorReverse2(args[i]);
-        }
-
-        return sinArr;
-    }
-
-    public static double[] countArrayAtanTaylor(double[] args){
-        double[] atanArr = new double[args.length];
-
-        for (int i = 0; i < atanArr.length; i++){
-            atanArr[i] = arctgTaylor(args[i]);
-        }
-
-        return atanArr;
-    }
-
-    public static double[] countArrayAtanTaylorBackwards(double[] args){
-        double[] atanArr = new double[args.length];
-
-        for (int i = 0; i < atanArr.length; i++){
-            atanArr[i] = arctgTaylorReverse(args[i]);
-        }
-
-        return atanArr;
-    }
-
-    public static double[] countArrayAtanTaylorFromPrev(double[] args){
-        double[] atanArr = new double[args.length];
-
-        for (int i = 0; i < atanArr.length; i++){
-            atanArr[i] = arctgTaylor2(args[i]);
-        }
-
-        return atanArr;
-    }
-
-    public static double[] countArrayAtanTaylorFromPrevBackwards(double[] args){
-        double[] atanArr = new double[args.length];
-
-        for (int i = 0; i < atanArr.length; i++){
-            atanArr[i] = arctgTaylorReverse2(args[i]);
-        }
-
-        return atanArr;
-    }
 
     public static void printSampleData(){
 
@@ -286,16 +222,10 @@ public class Zadanie1 {
 
     public static double sinTaylor(double x){
         double sum = x;
-        for (int i = 1; i < 30; i++){
+        for (int i = 1; i < 10; i++){
             int y = i*2+1;
             double licznik = pow(x, y);
             double mianownik = silnia(y);
-//            double mianownik = 1;
-//            for (int j = 1; j <= i*2 + 1; j++){
-//                mianownik *= j;
-//            }
-
-//            System.out.println("x^" + y + " / " + y + "!  =  " + licznik + "/" + mianownik);
 
             if (i % 2 == 0) {
                 sum += licznik/mianownik;
@@ -362,17 +292,12 @@ public class Zadanie1 {
                 int y = 2*i +1;
                 double licznik = pow(x, y);
                 double mianownik = silnia(y);
-//                System.out.println(licznik);
-//                System.out.println(mianownik);
-//                System.out.println("silnia " + y + " = " + mianownik);
                 sum += pow(-1, y) *  (licznik/mianownik);
                 prev = licznik/mianownik;
-//                System.out.println(prev);
             } else {
                 int y = i*2+1;
                 double delta = ((y+2) * (y+1)) / pow(x, 2);
                 double curr = prev * delta;
-//                System.out.println(curr);
                 if (i % 2 == 0){
                     sum += curr;
                 } else {
@@ -389,14 +314,13 @@ public class Zadanie1 {
     public static double arctgTaylor(double x){
         double sum = 0;
         if (-1 < x && x < 1){
-            for (int i = 0; i < 30; i++){
+            for (int i = 0; i < 10; i++){
                 double licznik = pow(x, 2*i + 1);
                 double mianownik = 2*i + 1;
-//                System.out.println("pow = " + pow(-1, i));
                 sum += pow(-1, i) * licznik / mianownik;
             }
         } else {
-            for (int i = 0; i < 30; i++){
+            for (int i = 0; i < 10; i++){
                 double licznik = 1;
                 double mianownik = (2*i + 1) * pow(x, 2*i + 1);
                 sum += pow(-1, i) * licznik / mianownik;
@@ -432,26 +356,21 @@ public class Zadanie1 {
             prev = 0;
             for (int i = 0; i < 10; i++){
                 if (i == 0) {
-//                    double mianownik = (2*i + 1) * pow(x, 2*i + 1);
                     double curr = 1 / x;
                     sum += curr;
                     prev = curr;
-//                    System.out.println(curr);
                 } else {
                     double currY = 2*i + 1;
                     double prevY = 2*(i-1) + 1;
                     double delta = prevY / (currY * pow(x, 2));
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-//                    System.out.println(pow(-1, i+1)* curr);
-//                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
 
             }
 
             if (x <= -1) {
-//                System.out.println("pi: " + (-1) * Math.PI / 2);
                 sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
                 sum = (Math.PI / 2) - sum;
@@ -489,7 +408,6 @@ public class Zadanie1 {
 
         }
 
-//        return sum+1;
         return sum;
     } //end method
 
@@ -507,7 +425,6 @@ public class Zadanie1 {
                     double mianownik = 2*i + 1;
                     sum += pow(-1, i) * (licznik / mianownik);
                     prev = licznik / mianownik;
-//                    System.out.println(licznik / mianownik);
                 }
                 else {
                     double prevMian = 2*(i+1)+1;
@@ -531,22 +448,18 @@ public class Zadanie1 {
                     double curr = 1 / (y * pow(x, y));
                     sum += pow(-1, i) * curr;
                     prev = curr;
-//                    System.out.println(curr);
                 } else {
                     double currY = 2*i + 1;
                     double prevY = 2*(i+1) + 1;
                     double delta = (prevY / currY) * pow(x, 2);
                     double curr = prev * delta;
                     sum += pow(-1, i) * curr;
-//                    System.out.println(curr);
-//                    System.out.println("prev = " + prev + "\n delta = " + delta);
                     prev = curr;
                 }
 
             }
 
             if (x <= -1) {
-//                System.out.println("pi: " + (-1) * Math.PI / 2);
                 sum =  ((-1) * Math.PI / 2) - sum;
             } else if (x >= 1){
                 sum = (Math.PI / 2) - sum;
