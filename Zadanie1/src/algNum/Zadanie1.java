@@ -37,7 +37,22 @@ public class Zadanie1 {
         System.out.println("Sredni blad dla metody 3: " + avgErr3);
         System.out.println("Sredni blad dla metody 4: " + avgErr4);
 
-        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
+//        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
+
+        printSampleData();
+        pytanieQ2();
+    }
+
+    public static void pytanieQ2(){
+        double[] arr = {0.6, 0.62, 0.65, 0.75, 0.8};
+        for (double val : arr){
+            double sinT = sinTaylor(val);
+            double arctgT = arctgTaylor(val);
+            double sinTarctgT = sinT * arctgT;
+            double mathSinMathAtan = Math.sin(val) * Math.atan(val);
+            double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+            System.out.println(String.format("Argument: %.2f. Różnica: %.16f", val, diff));
+        }
     }
 
     public static void saveToCsv(double[] arrX, double[] arr1, double[] arr2,
@@ -176,14 +191,15 @@ public class Zadanie1 {
 
     public static void printSampleData(){
 
-        double[] arr = {0.5, Math.PI};
-//        double[] arr = {0.5};
+//        double[] arr = {0.5, Math.PI};
+        double[] arr = {0.5};
         for (double val: arr) {
-            double sinT = sinTaylor2(val);
+            double sinT = sinTaylor(val);
             double arctgT = arctgTaylor2(val);
             double sinTarctgT = sinT * arctgT;
             double mathSinMathAtan = Math.sin(val) * Math.atan(val);
             double diff = Math.abs(sinTarctgT - mathSinMathAtan);
+            double diff2 = Math.abs(arctgT - Math.atan(val));
             System.out.println(String.format("---------\nval = %.4f", val));
             System.out.println(String.format("sinTaylor(%.4f) = %.16f, Math.sin(%.4f) = %.16f",
                     val, sinT,
@@ -196,10 +212,13 @@ public class Zadanie1 {
                     val, val, sinTarctgT,
                     val, val, mathSinMathAtan));
             System.out.println(String.format("Różnica: %.16f", diff));
-            double sinT_rev = sinTaylorReverse2(val);
+            System.out.println(String.format("Różnica: %.16f", diff2));
+
+            double sinT_rev = sinTaylorReverse(val);
             double arctgT_rev = arctgTaylorReverse2(val);
             double sinTarctgT_rev = sinT_rev * arctgT_rev;
             double diff_2 = Math.abs(sinTarctgT_rev - mathSinMathAtan);
+            double diff3 = Math.abs(arctgT_rev - Math.atan(val));
             System.out.println(String.format("***Reverse***\nval = %.4f", val));
             System.out.println(String.format("sinTaylorRev(%.4f) = %.16f, Math.sin(%.4f) = %.16f",
                     val, sinT_rev,
@@ -212,6 +231,7 @@ public class Zadanie1 {
                     val, val, sinTarctgT_rev,
                     val, val, mathSinMathAtan));
             System.out.println(String.format("Różnica: %.16f", diff_2));
+            System.out.println(String.format("Różnica: %.16f", diff3));
 
 
             System.out.println("diff_2 < diff: " + (diff_2 < diff));
