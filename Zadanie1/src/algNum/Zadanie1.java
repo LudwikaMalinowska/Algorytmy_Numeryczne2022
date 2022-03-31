@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class Zadanie1 {
 
+    private static int elements = 10;
+
 
     public static void main(String[] args) {
 
@@ -37,14 +39,14 @@ public class Zadanie1 {
         System.out.println("Sredni blad dla metody 3: " + avgErr3);
         System.out.println("Sredni blad dla metody 4: " + avgErr4);
 
-//        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
+        saveToCsv(arrayX, arr1, arr2, arr3, arr4);
 
         printSampleData();
         pytanieQ2();
     }
 
     public static void pytanieQ2(){
-        double[] arr = {0.6, 0.62, 0.65, 0.75, 0.8};
+        double[] arr = {0.05, 0.1, 0.15, 0.2};
         for (double val : arr){
             double sinT = sinTaylor(val);
             double arctgT = arctgTaylor(val);
@@ -146,8 +148,8 @@ public class Zadanie1 {
 
         for (int i = 0; i < sinAtanMistakeArr.length; i++){
             double val = args[i];
-            double sinT = sinTaylor2(val);
-            double arctgT = arctgTaylor2(val);
+            double sinT = sinTaylorFromPrev(val);
+            double arctgT = arctgTaylorFromPrev(val);
             double sinTarctgT = sinT * arctgT;
             double mathSinMathAtan = Math.sin(val) * Math.atan(val);
 
@@ -165,8 +167,8 @@ public class Zadanie1 {
 
         for (int i = 0; i < sinAtanMistakeArr.length; i++){
             double val = args[i];
-            double sinT = sinTaylorReverse2(val);
-            double arctgT = arctgTaylorReverse2(val);
+            double sinT = sinTaylorFromPrevReverse(val);
+            double arctgT = arctgTaylorFromPrevReverse(val);
             double sinTarctgT = sinT * arctgT;
             double mathSinMathAtan = Math.sin(val) * Math.atan(val);
 
@@ -195,7 +197,7 @@ public class Zadanie1 {
         double[] arr = {0.5};
         for (double val: arr) {
             double sinT = sinTaylor(val);
-            double arctgT = arctgTaylor2(val);
+            double arctgT = arctgTaylorFromPrev(val);
             double sinTarctgT = sinT * arctgT;
             double mathSinMathAtan = Math.sin(val) * Math.atan(val);
             double diff = Math.abs(sinTarctgT - mathSinMathAtan);
@@ -215,7 +217,7 @@ public class Zadanie1 {
             System.out.println(String.format("Różnica: %.16f", diff2));
 
             double sinT_rev = sinTaylorReverse(val);
-            double arctgT_rev = arctgTaylorReverse2(val);
+            double arctgT_rev = arctgTaylorFromPrevReverse(val);
             double sinTarctgT_rev = sinT_rev * arctgT_rev;
             double diff_2 = Math.abs(sinTarctgT_rev - mathSinMathAtan);
             double diff3 = Math.abs(arctgT_rev - Math.atan(val));
@@ -240,255 +242,460 @@ public class Zadanie1 {
         }
     }
 
-    public static double sinTaylor(double x){
-        double sum = x;
-        for (int i = 1; i < 10; i++){
+    public static double[] sinTaylorTab(double x){
+        double[] sinTab = new double[elements]; //10
+        sinTab[0] = x;
+        for (int i = 1; i < elements; i++){
             int y = i*2+1;
             double licznik = pow(x, y);
             double mianownik = silnia(y);
 
             if (i % 2 == 0) {
-                sum += licznik/mianownik;
+                sinTab[i] = licznik/mianownik;
             } else {
-                sum -= licznik/mianownik;
+                sinTab[i] = (-1) * (licznik/mianownik);
             }
         }
 
-        return sum;
-    } //end method
+        return sinTab;
+    }
 
-    public static double sinTaylor2(double x){ //ok
-        double sum = x;
+//    public static double sinTaylor(double x){
+//        double sum = x;
+//        for (int i = 1; i < 10; i++){
+//            int y = i*2+1;
+//            double licznik = pow(x, y);
+//            double mianownik = silnia(y);
+//
+//            if (i % 2 == 0) {
+//                sum += licznik/mianownik;
+//            } else {
+//                sum -= licznik/mianownik;
+//            }
+//        }
+//
+//        return sum;
+//    } //end method
+
+    public static double sinTaylor(double x){
+        double[] sinTab = sinTaylorTab(x);
+        double sum = 0;
+        for (double val : sinTab){
+            sum += val;
+        }
+
+        return sum;
+    }
+
+    public static double sinTaylorReverse(double x){
+        double[] sinTab = sinTaylorTab(x);
+        double sum = 0;
+        for (int i = elements - 1; i >= 0; i--){
+            sum += sinTab[i];
+        }
+
+        return sum;
+    }
+
+    public static double[] sinTaylorFromPrevTab(double x){ //ok
+        double[] sinTaylor = new double[elements];
+        sinTaylor[0] = x;
         double prev = x;
         for (int i = 1; i < 10; i++){
             if (i == 1){
                 double licznik = pow(x, 3);
                 double mianownik = 2 * 3;
-                sum -= licznik/mianownik;
+                sinTaylor[i] = (-1) * licznik/mianownik;
                 prev = licznik/mianownik;
             } else {
                 int y = i*2+1;
                 double delta = pow(x, 2) / (y * (y-1));
                 double curr = prev * delta;
                 if (i % 2 == 0){
-                    sum += curr;
+                    sinTaylor[i] = curr;
                 } else {
-                    sum -= curr;
+                    sinTaylor[i] = (-1) * curr;
                 }
                 prev = curr;
             }
         }
 
-        return sum;
+        return sinTaylor;
     } //end method
 
-
-    public static double sinTaylorReverse(double x){
-        double sum = x;
-        for (int i = 9; i > 0; i--){
-            int y = i*2+1;
-            double licznik = pow(x, y);
-            double mianownik = 1;
-            for (int j = 1; j <= i*2 + 1; j++){
-                mianownik *= j;
-            }
-
-            if (i % 2 == 0) {
-                sum += licznik/mianownik;
-            } else {
-                sum -= licznik/mianownik;
-            }
+    public static double sinTaylorFromPrev(double x){
+        double[] sinTab = sinTaylorFromPrevTab(x);
+        double sum = 0;
+        for (double val : sinTab){
+            sum += val;
         }
 
         return sum;
-    } //end method
+    }
 
-    public static double sinTaylorReverse2(double x){ //ok
-        if (x == 0.0) return 0.0;
+    public static double sinTaylorFromPrevReverse(double x){
+        double[] sinTab = sinTaylorFromPrevTab(x);
         double sum = 0;
-        double prev = 0;
-        for (int i = 9; i >= 0; i--){
-            if (i == 9){
-                int y = 2*i +1;
-                double licznik = pow(x, y);
-                double mianownik = silnia(y);
-                sum += pow(-1, y) *  (licznik/mianownik);
-                prev = licznik/mianownik;
-            } else {
-                int y = i*2+1;
-                double delta = ((y+2) * (y+1)) / pow(x, 2);
-                double curr = prev * delta;
-                if (i % 2 == 0){
-                    sum += curr;
-                } else {
-                    sum -= curr;
-                }
-                prev = curr;
-            }
+        for (int i = elements-1; i >= 0; i--){
+            sum += sinTab[i];
         }
 
         return sum;
-    } //end method
+    }
 
+//    public static double sinTaylorFromPrev(double x){ //ok
+//        double sum = x;
+//        double prev = x;
+//        for (int i = 1; i < 10; i++){
+//            if (i == 1){
+//                double licznik = pow(x, 3);
+//                double mianownik = 2 * 3;
+//                sum -= licznik/mianownik;
+//                prev = licznik/mianownik;
+//            } else {
+//                int y = i*2+1;
+//                double delta = pow(x, 2) / (y * (y-1));
+//                double curr = prev * delta;
+//                if (i % 2 == 0){
+//                    sum += curr;
+//                } else {
+//                    sum -= curr;
+//                }
+//                prev = curr;
+//            }
+//        }
+//
+//        return sum;
+//    } //end method
 
-    public static double arctgTaylor(double x){
-        double sum = 0;
+//
+//    public static double sinTaylorReverse(double x){
+//        double sum = x;
+//        for (int i = 9; i > 0; i--){
+//            int y = i*2+1;
+//            double licznik = pow(x, y);
+//            double mianownik = 1;
+//            for (int j = 1; j <= i*2 + 1; j++){
+//                mianownik *= j;
+//            }
+//
+//            if (i % 2 == 0) {
+//                sum += licznik/mianownik;
+//            } else {
+//                sum -= licznik/mianownik;
+//            }
+//        }
+//
+//        return sum;
+//    } //end method
+
+//    public static double sinTaylorFromPrevReverse(double x){ //ok
+//        if (x == 0.0) return 0.0;
+//        double sum = 0;
+//        double prev = 0;
+//        for (int i = 9; i >= 0; i--){
+//            if (i == 9){
+//                int y = 2*i +1;
+//                double licznik = pow(x, y);
+//                double mianownik = silnia(y);
+//                sum += pow(-1, y) *  (licznik/mianownik);
+//                prev = licznik/mianownik;
+//            } else {
+//                int y = i*2+1;
+//                double delta = ((y+2) * (y+1)) / pow(x, 2);
+//                double curr = prev * delta;
+//                if (i % 2 == 0){
+//                    sum += curr;
+//                } else {
+//                    sum -= curr;
+//                }
+//                prev = curr;
+//            }
+//        }
+//
+//        return sum;
+//    } //end method
+
+    public static double[] arcTaylorTab(double x){
+        double[] arcTgTab = new double[elements];
         if (-1 < x && x < 1){
-            for (int i = 0; i < 10; i++){
+            for (int i = 0; i < elements; i++){
                 double licznik = pow(x, 2*i + 1);
                 double mianownik = 2*i + 1;
-                sum += pow(-1, i) * licznik / mianownik;
+                arcTgTab[i] = pow(-1, i) * licznik / mianownik;
             }
         } else {
-            for (int i = 0; i < 10; i++){
+            for (int i = 0; i < elements; i++) {
                 double licznik = 1;
-                double mianownik = (2*i + 1) * pow(x, 2*i + 1);
-                sum += pow(-1, i) * licznik / mianownik;
+                double mianownik = (2 * i + 1) * pow(x, 2 * i + 1);
+                arcTgTab[i] = pow(-1, i) * licznik / mianownik;
             }
+        }
 
-            if (x <= -1) {
-                sum =  (-1) * Math.PI / 2 - sum;
-            } else if (x >= 1){
-                sum = Math.PI / 2 - sum;
-            }
+        return arcTgTab;
+    }
 
+    public static double arctgTaylor(double x){
+        double[] arctgTab = arcTaylorTab(x);
+        double sum = 0;
+        for (double val : arctgTab){
+            sum += val;
+        }
+
+        if (x <= -1){
+            sum =  (-1) * Math.PI / 2 - sum;
+        }
+        if (x >= 1) {
+            sum = Math.PI / 2 - sum;
         }
 
         return sum;
-    } //end method
+    }
 
-    public static double arctgTaylor2(double x){
-        double sum;
+    public static double arctgTaylorReverse(double x){
+        double[] arctgTab = arcTaylorTab(x);
+        double sum = 0;
+        for (int i = elements-1; i >= 0; i--){
+            sum += arctgTab[i];
+        }
+
+        if (x <= -1){
+            sum =  (-1) * Math.PI / 2 - sum;
+        }
+        if (x >= 1) {
+            sum = Math.PI / 2 - sum;
+        }
+
+        return sum;
+    }
+
+    public static double[] arcTaylorTabFromPrev(double x){
+        double[] arcTgTab = new double[elements];
         double prev;
         if (-1 < x && x < 1){
-            sum = x;
+            arcTgTab[0] = x;
             prev = x;
-            for (int i = 1; i < 10; i++){
+            for (int i = 1; i < elements; i++){
                 double prevMian = 2*(i-1)+1;
                 double currMian = 2*i+1;
                 double delta = pow(x, 2) * prevMian / currMian;
                 double curr = prev * delta;
-                sum += pow(-1, i) * curr;
+                arcTgTab[i] = pow(-1, i) * curr;
                 prev = curr;
             }
         } else {
-            sum = 0;
             prev = 0;
-            for (int i = 0; i < 10; i++){
+            for (int i = 0; i < elements; i++){
                 if (i == 0) {
                     double curr = 1 / x;
-                    sum += curr;
+                    arcTgTab[i] = curr;
                     prev = curr;
                 } else {
                     double currY = 2*i + 1;
                     double prevY = 2*(i-1) + 1;
                     double delta = prevY / (currY * pow(x, 2));
                     double curr = prev * delta;
-                    sum += pow(-1, i) * curr;
+                    arcTgTab[i] = pow(-1, i) * curr;
                     prev = curr;
                 }
-
             }
-
-            if (x <= -1) {
-                sum =  ((-1) * Math.PI / 2) - sum;
-            } else if (x >= 1){
-                sum = (Math.PI / 2) - sum;
-            }
-
         }
 
-        return sum;
-    } //end method
+        return arcTgTab;
+    }
 
-
-    public static double arctgTaylorReverse(double x){
+    public static double arctgTaylorFromPrev(double x){
+        double[] arctgTab = arcTaylorTabFromPrev(x);
         double sum = 0;
-        if (-1 < x && x < 1){
-            for (int i = 9; i >= 0; i--){
-                int y = 2*i + 1;
-                double licznik = pow(x, y);
-                double mianownik = 2*i + 1;
-                sum += pow(-1, i) * (licznik / mianownik);
-            }
+        for (double val : arctgTab){
+            sum += val;
         }
-        else {
-            for (int i = 9; i >= 0; i--){
-                double licznik = 1;
-                int y = 2*i + 1;
-                double mianownik = (2*i + 1) * pow(x, y);
-                sum += pow(-1, i) * (licznik / mianownik);
-            }
 
-            if (x <= -1) {
-                sum =  (-1) * Math.PI / 2 - sum;
-            } else if (x >= 1){
-                sum = Math.PI / 2 - sum;
-            }
-
+        if (x <= -1){
+            sum =  (-1) * Math.PI / 2 - sum;
+        }
+        if (x >= 1) {
+            sum = Math.PI / 2 - sum;
         }
 
         return sum;
-    } //end method
+    }
 
-    public static double arctgTaylorReverse2(double x){
-        if (x == 0.0) return 0.0;
-        double sum;
-        double prev;
-        if (-1 < x && x < 1){
-            sum = 0;
-            prev = 0;
-            for (int i = 9; i > 0; i--){
-                if (i == 9) {
-                    int y = 2*i + 1;
-                    double licznik = pow(x, y);
-                    double mianownik = 2*i + 1;
-                    sum += pow(-1, i) * (licznik / mianownik);
-                    prev = licznik / mianownik;
-                }
-                else {
-                    double prevMian = 2*(i+1)+1;
-                    double currMian = 2*i+1;
-                    double delta = prevMian / (currMian * pow(x, 2));
-                    double curr = prev * delta;
-                    sum += pow(-1, i) * curr;
-                    prev = curr;
-                }
-
-            }
-
-            sum += x;
+    public static double arctgTaylorFromPrevReverse(double x){
+        double sum = 0;
+        double[] arctgTab = arcTaylorTabFromPrev(x);
+        for (int i = elements-1; i >= 0; i--){
+            sum += arctgTab[i];
         }
-        else {
-            sum = 0;
-            prev = 0;
-            for (int i = 9; i >= 0; i--){
-                if (i == 9) {
-                    int y = 2*i +1;
-                    double curr = 1 / (y * pow(x, y));
-                    sum += pow(-1, i) * curr;
-                    prev = curr;
-                } else {
-                    double currY = 2*i + 1;
-                    double prevY = 2*(i+1) + 1;
-                    double delta = (prevY / currY) * pow(x, 2);
-                    double curr = prev * delta;
-                    sum += pow(-1, i) * curr;
-                    prev = curr;
-                }
 
-            }
-
-            if (x <= -1) {
-                sum =  ((-1) * Math.PI / 2) - sum;
-            } else if (x >= 1){
-                sum = (Math.PI / 2) - sum;
-            }
-
+        if (x <= -1){
+            sum =  (-1) * Math.PI / 2 - sum;
+        }
+        if (x >= 1) {
+            sum = Math.PI / 2 - sum;
         }
 
         return sum;
-    } //end method
+    }
+
+//    public static double arctgTaylor(double x){
+//        double sum = 0;
+//        if (-1 < x && x < 1){
+//            for (int i = 0; i < 10; i++){
+//                double licznik = pow(x, 2*i + 1);
+//                double mianownik = 2*i + 1;
+//                sum += pow(-1, i) * licznik / mianownik;
+//            }
+//        } else {
+//            for (int i = 0; i < 10; i++){
+//                double licznik = 1;
+//                double mianownik = (2*i + 1) * pow(x, 2*i + 1);
+//                sum += pow(-1, i) * licznik / mianownik;
+//            }
+//
+//            if (x <= -1) {
+//                sum =  (-1) * Math.PI / 2 - sum;
+//            } else if (x >= 1){
+//                sum = Math.PI / 2 - sum;
+//            }
+//
+//        }
+//
+//        return sum;
+//    } //end method
+//
+//    public static double arctgTaylorFromPrev(double x){
+//        double sum;
+//        double prev;
+//        if (-1 < x && x < 1){
+//            sum = x;
+//            prev = x;
+//            for (int i = 1; i < 10; i++){
+//                double prevMian = 2*(i-1)+1;
+//                double currMian = 2*i+1;
+//                double delta = pow(x, 2) * prevMian / currMian;
+//                double curr = prev * delta;
+//                sum += pow(-1, i) * curr;
+//                prev = curr;
+//            }
+//        } else {
+//            sum = 0;
+//            prev = 0;
+//            for (int i = 0; i < 10; i++){
+//                if (i == 0) {
+//                    double curr = 1 / x;
+//                    sum += curr;
+//                    prev = curr;
+//                } else {
+//                    double currY = 2*i + 1;
+//                    double prevY = 2*(i-1) + 1;
+//                    double delta = prevY / (currY * pow(x, 2));
+//                    double curr = prev * delta;
+//                    sum += pow(-1, i) * curr;
+//                    prev = curr;
+//                }
+//
+//            }
+//
+//            if (x <= -1) {
+//                sum =  ((-1) * Math.PI / 2) - sum;
+//            } else if (x >= 1){
+//                sum = (Math.PI / 2) - sum;
+//            }
+//
+//        }
+//
+//        return sum;
+//    } //end method
+
+
+//    public static double arctgTaylorReverse(double x){
+//        double sum = 0;
+//        if (-1 < x && x < 1){
+//            for (int i = 9; i >= 0; i--){
+//                int y = 2*i + 1;
+//                double licznik = pow(x, y);
+//                double mianownik = 2*i + 1;
+//                sum += pow(-1, i) * (licznik / mianownik);
+//            }
+//        }
+//        else {
+//            for (int i = 9; i >= 0; i--){
+//                double licznik = 1;
+//                int y = 2*i + 1;
+//                double mianownik = (2*i + 1) * pow(x, y);
+//                sum += pow(-1, i) * (licznik / mianownik);
+//            }
+//
+//            if (x <= -1) {
+//                sum =  (-1) * Math.PI / 2 - sum;
+//            } else if (x >= 1){
+//                sum = Math.PI / 2 - sum;
+//            }
+//
+//        }
+//
+//        return sum;
+//    } //end method
+
+//    public static double arctgTaylorFromPrevReverse(double x){
+//        if (x == 0.0) return 0.0;
+//        double sum;
+//        double prev;
+//        if (-1 < x && x < 1){
+//            sum = 0;
+//            prev = 0;
+//            for (int i = 9; i > 0; i--){
+//                if (i == 9) {
+//                    int y = 2*i + 1;
+//                    double licznik = pow(x, y);
+//                    double mianownik = 2*i + 1;
+//                    sum += pow(-1, i) * (licznik / mianownik);
+//                    prev = licznik / mianownik;
+//                }
+//                else {
+//                    double prevMian = 2*(i+1)+1;
+//                    double currMian = 2*i+1;
+//                    double delta = prevMian / (currMian * pow(x, 2));
+//                    double curr = prev * delta;
+//                    sum += pow(-1, i) * curr;
+//                    prev = curr;
+//                }
+//
+//            }
+//
+//            sum += x;
+//        }
+//        else {
+//            sum = 0;
+//            prev = 0;
+//            for (int i = 9; i >= 0; i--){
+//                if (i == 9) {
+//                    int y = 2*i +1;
+//                    double curr = 1 / (y * pow(x, y));
+//                    sum += pow(-1, i) * curr;
+//                    prev = curr;
+//                } else {
+//                    double currY = 2*i + 1;
+//                    double prevY = 2*(i+1) + 1;
+//                    double delta = (prevY / currY) * pow(x, 2);
+//                    double curr = prev * delta;
+//                    sum += pow(-1, i) * curr;
+//                    prev = curr;
+//                }
+//
+//            }
+//
+//            if (x <= -1) {
+//                sum =  ((-1) * Math.PI / 2) - sum;
+//            } else if (x >= 1){
+//                sum = (Math.PI / 2) - sum;
+//            }
+//
+//        }
+//
+//        return sum;
+//    } //end method
 
 
     public static double pow(double num, int pow){
