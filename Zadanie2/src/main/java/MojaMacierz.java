@@ -108,6 +108,37 @@ public class MojaMacierz<T extends Number> {
 
         return B;
     }
+
+    public Double[] gaussKrok2(T[] B){
+        Double[] x = new Double[B.length];
+        int i = values.length;
+        int j = values[0].length;
+        double Bn = B[B.length-1].doubleValue();
+        double Ann = values[i-1][j-1].doubleValue();
+        //Xn
+        x[x.length-1] = Bn / Ann;
+        for (int k = x.length-2; k >= 0 ; k--){
+            System.out.println(k);
+            double bk = B[k].doubleValue();
+            double akk = values[k][k].doubleValue();
+            double sum = 0;
+            for (int n = k; n < values[0].length-1; n++){
+                double ak = values[k][n+1].doubleValue();
+                sum += ak * x[n+1];
+            }
+
+            x[k] = (bk - sum) / akk;
+        }
+
+        return x;
+    }
+
+    public Double[] gauss(T[] B){
+        T[] B2 = this.elGaussKrok1(B);
+        Double[] result = this.gaussKrok2(B2);
+
+        return result;
+    }
 //
 //    public static <T> T[][] eliminateX1(T[][] A, T[] B){
 //        T[] m = new T[A.length-1];
@@ -200,6 +231,9 @@ public class MojaMacierz<T extends Number> {
             System.out.println(Arrays.toString(row));
         }
         System.out.println(Arrays.toString(b1));
+
+        Double[] b2 = m4.gaussKrok2(b1);
+        System.out.println(Arrays.toString(b2));
 
     }
 }
