@@ -78,8 +78,8 @@ public class MojaMacierz<T extends Number> {
         for (int k = 1; k <= values.length; k++){
             Double[] m = new Double[values.length -k];
             for (int i = 0; i < m.length; i++){
-                System.out.println("-----");
-                System.out.println(i-1);
+//                System.out.println("-----");
+//                System.out.println(i-1);
                 m[i] = values[i+k][k-1].doubleValue() / values[k-1][k-1].doubleValue();
             }
 
@@ -89,7 +89,7 @@ public class MojaMacierz<T extends Number> {
             int mi = 0;
             for (int i = k; i < values.length; i++){
                 for (int j = k-1; j < values[0].length; j++){
-                    System.out.printf("[%d][%d]", i, j);
+//                    System.out.printf("[%d][%d]", i, j);
 //                    System.out.println(mi);
                     Double val = values[i][j].doubleValue() -
                             (values[k-1][j].doubleValue() * m[mi]);
@@ -133,11 +133,93 @@ public class MojaMacierz<T extends Number> {
         return x;
     }
 
-    public Double[] gauss(T[] B){
+    public Double[] gaussG(T[] B){
         T[] B2 = this.elGaussKrok1(B);
         Double[] result = this.gaussKrok2(B2);
 
         return result;
+    }
+
+    public T[] k1(T[] B, int k){
+        Double[] m = new Double[values.length -k];
+        for (int i = 0; i < m.length; i++){
+            System.out.println("-----");
+            System.out.println(i-1);
+            m[i] = values[i+k][k-1].doubleValue() / values[k-1][k-1].doubleValue();
+        }
+
+        System.out.println("m:" + Arrays.toString(m)); //ok
+
+
+        int mi = 0;
+        for (int i = k; i < values.length; i++){
+            for (int j = k-1; j < values[0].length; j++){
+                System.out.printf("[%d][%d]", i, j);
+//                    System.out.println(mi);
+                Double val = values[i][j].doubleValue() -
+                        (values[k-1][j].doubleValue() * m[mi]);
+                values[i][j] = (T) val;
+            }
+
+            Double valB = B[i].doubleValue() - (m[mi] * B[k-1].doubleValue());
+            B[i] = (T) valB;
+
+            mi++;
+        }
+
+        return B;
+    }
+
+    public T[] gaussPGkrok1(T[] B){
+
+        T[] b1 = B;
+        for (int k = 0; k < values.length-1; k++){
+            int p = maxCol(k);
+            if (k != p){
+                //zamień miejscami
+                T[] rowK = values[k];
+                T[] rowP = values[p];
+                values[k] = rowP;
+                values[p] = rowK;
+                T temp_bk = B[k];
+                B[k] = B[p];
+                B[p] = temp_bk;
+            }
+            b1 = this.k1(B, k+1);
+        }
+
+        return b1;
+    }
+
+
+    public Double[] gaussPG(T[] B){
+        T[] b1 = this.gaussPGkrok1(B);
+        Double[] result = this.gaussKrok2(b1);
+
+        return result;
+    }
+
+    public Double maxInCol(int col){
+        Double max = values[0][0].doubleValue();
+        for (int i = col; i < values[0].length; i++){
+            if (Math.abs(values[i][col].doubleValue()) > max){
+                max = values[i][col].doubleValue();
+            }
+        }
+
+        return max;
+    }
+
+    public int maxCol(int col){
+        int maxCol = col;
+        double max = values[0][0].doubleValue();
+        for (int i = col; i < values[0].length; i++){
+            if (Math.abs(values[i][col].doubleValue()) > max){
+                maxCol = i;
+            }
+        }
+
+        return maxCol;
     }
 //
 //    public static <T> T[][] eliminateX1(T[][] A, T[] B){
@@ -218,22 +300,57 @@ public class MojaMacierz<T extends Number> {
                 {0.1, -0.1, -0.3, -3.5},
                 {4.5, -5.2, 4.2, -3.4},
         };
+
+        Integer[][] arr5 = new Integer[][]{
+                {1,2,3,1},
+                {4,5,6,2},
+                {7,8,9,3}
+
+        };
+        Integer[][] arr6 = new Integer[][]{
+                {1,2,3,4,5},
+                {1,2,3,4,5},
+                {1,2,3,4,5},
+                {1,2,3,4,5},
+
+        };
 //        MojaMacierz<Double> m1 = new MojaMacierz<>(arr1);
 //        MojaMacierz<Double> m2 = new MojaMacierz<>(arr2);
-        MojaMacierz<Double> m4 = new MojaMacierz<>(arr4);
-//        MojaMacierz<Double> m3 = m1.add(m2);
+//        MojaMacierz<Double> m4 = new MojaMacierz<>(arr4);
+////        MojaMacierz<Double> m3 = m1.add(m2);
+//
+//        Double[] b = new Double[]{13.15, 49.84, -14.08, -46.51};
+//        Double[] b1 = m4.elGaussKrok1(b);
+//
+//        Double[][] m4d = m4.getValues();
+//        for (Double[] row : m4d){
+//            System.out.println(Arrays.toString(row));
+//        }
+//        System.out.println(Arrays.toString(b1));
+//
+//        Double[] b2 = m4.gaussKrok2(b1);
+//        System.out.println(Arrays.toString(b2));
 
-        Double[] b = new Double[]{13.15, 49.84, -14.08, -46.51};
-        Double[] b1 = m4.elGaussKrok1(b);
+//        MojaMacierz<Integer> m1 = new MojaMacierz<>(arr5);
+//        MojaMacierz<Integer> m2 = new MojaMacierz<>(arr6);
+//        m1.multiply(m2);
+//        Integer[][] m3 = m1.getValues();
+//        System.out.println(Arrays.deepToString(m3));
 
-        Double[][] m4d = m4.getValues();
-        for (Double[] row : m4d){
+        Double[][] arr7 = new Double[][]{
+                {2.0,4.0,2.0, 0.0},
+                {1.0,0.0,-1.0,1.0},
+                {0.0,1.0,3.0, -1.0},
+                {2.0,1.0,2.0, 1.0},
+
+        };
+        Double[] b2 = new Double[]{4.0,2.0,0.0,6.0};
+        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7);
+        Double[] result3 = m1.gaussPG(b2);
+        System.out.println();
+        for (Double[] row : m1.getValues()){
             System.out.println(Arrays.toString(row));
         }
-        System.out.println(Arrays.toString(b1));
-
-        Double[] b2 = m4.gaussKrok2(b1);
-        System.out.println(Arrays.toString(b2));
-
+        System.out.println("\nb:" + Arrays.toString(result3));
     }
 }
