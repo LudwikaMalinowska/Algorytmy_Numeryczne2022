@@ -1,5 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 
 //przyjmuje dowolny typ liczby, ale z uwagi na to jak zaimplementowane są liczby w
 // javie, oraz że typy generyczne nie są przystosowane do matematyki
@@ -75,35 +77,37 @@ public class MojaMacierz<T extends Number> {
     }
 
     public T[] elGaussKrok1(T[] B){
+        T[] b1 = B;
         for (int k = 1; k <= values.length; k++){
-            Double[] m = new Double[values.length -k];
-            for (int i = 0; i < m.length; i++){
-//                System.out.println("-----");
-//                System.out.println(i-1);
-                m[i] = values[i+k][k-1].doubleValue() / values[k-1][k-1].doubleValue();
-            }
-
-            System.out.println("m:" + Arrays.toString(m)); //ok
-
-
-            int mi = 0;
-            for (int i = k; i < values.length; i++){
-                for (int j = k-1; j < values[0].length; j++){
-//                    System.out.printf("[%d][%d]", i, j);
-//                    System.out.println(mi);
-                    Double val = values[i][j].doubleValue() -
-                            (values[k-1][j].doubleValue() * m[mi]);
-                    values[i][j] = (T) val;
-                }
-
-                Double valB = B[i].doubleValue() - (m[mi] * B[k-1].doubleValue());
-                B[i] = (T) valB;
-
-                mi++;
-            }
-
-
-            System.out.println("\nB:" + Arrays.toString(B)); //ok
+//            Double[] m = new Double[values.length -k];
+//            for (int i = 0; i < m.length; i++){
+////                System.out.println("-----");
+////                System.out.println(i-1);
+//                m[i] = values[i+k][k-1].doubleValue() / values[k-1][k-1].doubleValue();
+//            }
+//
+//            System.out.println("m:" + Arrays.toString(m)); //ok
+//
+//
+//            int mi = 0;
+//            for (int i = k; i < values.length; i++){
+//                for (int j = k-1; j < values[0].length; j++){
+////                    System.out.printf("[%d][%d]", i, j);
+////                    System.out.println(mi);
+//                    Double val = values[i][j].doubleValue() -
+//                            (values[k-1][j].doubleValue() * m[mi]);
+//                    values[i][j] = (T) val;
+//                }
+//
+//                Double valB = B[i].doubleValue() - (m[mi] * B[k-1].doubleValue());
+//                B[i] = (T) valB;
+//
+//                mi++;
+//            }
+//
+//
+//            System.out.println("\nB:" + Arrays.toString(B)); //ok
+            b1 = this.k1(B, k);
         }
 
         return B;
@@ -221,69 +225,98 @@ public class MojaMacierz<T extends Number> {
 
         return maxCol;
     }
+
+    public Number[][] gaussFGkrok1(T[] B){
+        T[] B1 = B;
+        int[] Q = new int[]{0,1,2,3}; //values.len
+
+        for (int k = 0; k < values.length; k++){
+            int[] t = maxInRange(values, k);
+            int p = t[0];
+            int kol = t[1];
+
+            B1 = switchRow(B1, k, p);
+
+            if (!Arrays.equals(t, new int[]{k, k})){
+                switchCol(k, kol);
+
+                int temp = Q[k];
+                Q[k] = Q[kol];
+                Q[kol] = temp;
+            }
+
+
+            B1 = k1(B1, k+1);
+        }
+
+        Integer[] q = IntStream.of( Q ).boxed().toArray( Integer[]::new );
+        Number[][] d = new Number[][]{B1, q};
+
+        return d;
+    }
+
+    public Double[] gaussFG(T[] B){
+        Number[][] r = this.gaussFGkrok1(B);
+        T[] b1 = (T[]) r[0];
+        Integer[] Q = (Integer[]) r[1];
+
+        Double[] result = this.gaussKrok2(b1);
+        System.out.println("Q: " + Arrays.toString(Q));
+
+        Double[] res1 = new Double[values[0].length];
+        List<Integer> Qlist = Arrays.asList(Q);
+        for (int i = 0; i < values[0].length; i++){
+            int idx = Qlist.indexOf(i);
+            res1[i] = result[idx];
+        }
+
+        System.out.println("res:" + Arrays.toString(result));
+        System.out.println("res1:" + Arrays.toString(res1));
+        return res1;
+    }
+
+    private T[] switchRow(T[] B, int k, int p){
+        T[] rowK = values[k];
+        T[] rowP = values[p];
+        values[k] = rowP;
+        values[p] = rowK;
+        T temp_bk = B[k];
+        B[k] = B[p];
+        B[p] = temp_bk;
+
+        return B;
+    }
+
+    private void switchCol(int k, int kol){
+        Double[] col1 = new Double[values.length];
+        Double[] col2 = new Double[values.length];
+
+        for (int i = k; i < values.length; i++){
+            col1[i] = values[i][k].doubleValue();
+            col2[i] = values[i][kol].doubleValue();
+        }
+        for (int i = k; i < values.length; i++){
+            values[i][k] = (T) col2[i];
+            values[i][kol] = (T) col1[i];
+        }
+    }
+
+    public int[] maxInRange(T[][] vals, int k){
+        Double max = vals[k][k].doubleValue();
+        int[] maxCords = new int[]{k,k};
+
+        for (int i = k; i < vals.length; i++){
+            for (int j = k; j < vals[0].length; j++){
+                if (vals[i][j].doubleValue() > max){
+                    max = vals[i][j].doubleValue();
+                    maxCords = new int[]{i, j};
+                }
+            }
+        }
+
+        return maxCords;
+    }
 //
-//    public static <T> T[][] eliminateX1(T[][] A, T[] B){
-//        T[] m = new T[A.length-1];
-//        for (int i = 1; i < A.length; i++){
-//            m[i-1] = A[i][0] / A[0][0];
-//        }
-//
-//        System.out.println("m:" + Arrays.toString(m)); //ok
-//
-//        for (int i = 0; i < m.length; i++){
-//            for (int j = 0; j < A[0].length; j++){
-//                A[i+1][j] -= (A[0][j] * m[i]);
-//            }
-//        }
-//
-//        return A;
-//    }
-//
-//    public static <T> T[][] eliminateX2(T[][] A, T[] B){
-////        System.out.println("A: " + Arrays.deepToString(A));
-//        T[] m = new T[A.length-2];
-//        for (int i = 0; i < m.length; i++){
-////            System.out.println(A[i+1][1]);
-//            m[i] = A[i+2][1] / A[1][1];
-//        }
-//
-//        System.out.println("m:" + Arrays.toString(m)); //ok
-//
-//        int mi = 0;
-//        for (int i = 2; i < A.length; i++){
-//            for (int j = 1; j < A[0].length; j++){
-////                System.out.printf("[%d][%d]", i, j);
-////                System.out.println(mi);
-//                A[i][j] -= (A[1][j] * m[mi]);
-//            }
-//            mi++;
-//        }
-//
-//        return A;
-//    }
-//
-//    public static <T> T[][] eliminateX3(T[][] A, T[] B){
-//        System.out.println("A: " + Arrays.deepToString(A));
-//        T[] m = new T[A.length-3];
-//        for (int i = 0; i < m.length; i++){
-//            System.out.println(A[i+1][1]);
-//            m[i] = A[i+3][2] / A[2][2];
-//        }
-//
-//        System.out.println("m:" + Arrays.toString(m)); //ok
-//
-//        int mi = 0;
-//        for (int i = 3; i < A.length; i++){
-//            for (int j = 2; j < A[0].length; j++){
-//                System.out.printf("[%d][%d]", i, j);
-//                System.out.println(mi);
-//                A[i][j] -= (A[2][j] * m[mi]);
-//            }
-//            mi++;
-//        }
-//
-//        return A;
-//    }
 
     public static void main(String[] args) {
         Double[][] arr1 = new Double[][]{
@@ -345,8 +378,16 @@ public class MojaMacierz<T extends Number> {
 
         };
         Double[] b2 = new Double[]{4.0,2.0,0.0,6.0};
+
+        Double[][] arr8 = new Double[][]{
+                {0.0, 1.0},
+                {2.0, 3.0}
+
+        };
+        Double[] b3 = new Double[]{2.0, 8.0};
+
         MojaMacierz<Double> m1 = new MojaMacierz<>(arr7);
-        Double[] result3 = m1.gaussPG(b2);
+        Double[] result3 = m1.gaussFG(b2);
         System.out.println();
         for (Double[] row : m1.getValues()){
             System.out.println(Arrays.toString(row));
