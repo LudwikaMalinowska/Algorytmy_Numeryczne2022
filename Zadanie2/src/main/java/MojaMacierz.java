@@ -37,6 +37,35 @@ public class MojaMacierz<T extends Number> {
         return this.convert(result);
     }
 
+    public MojaMacierz<T> subtract(MojaMacierz<T> otherMatrix){  //działa
+        T[][] other = otherMatrix.getValues();
+        //takie same wymiary
+        if (values.length != other.length || values[0].length != other[0].length)
+            throw new RuntimeException();
+
+        Double[][] result = new Double[values.length][values[0].length];
+
+        for (int i = 0; i < values.length; i++){
+            for (int j = 0; j < values[0].length; j++){
+                result[i][j] = (values[i][j].doubleValue() - other[i][j].doubleValue());
+            }
+        }
+
+        return this.convert(result);
+    }
+
+    public MojaMacierz<T> abs(){
+        Double[][] result = new Double[values.length][values[0].length];
+
+        for (int i = 0; i < values.length; i++){
+            for (int j = 0; j < values[0].length; j++){
+                result[i][j] = Math.abs((Double) values[i][j]);
+            }
+        }
+
+        return this.convert(result);
+    }
+
     public MojaMacierz<T> multiply(MojaMacierz<T> otherMatrix){
         T[][] other = otherMatrix.getValues();
         if (values[0].length != other.length) throw new RuntimeException();
@@ -55,7 +84,7 @@ public class MojaMacierz<T extends Number> {
         return this.convert(result);
     }
 
-    public Double[] multiply(Double[] vector){
+    public Double[] multiply(Double[][] vector){
         if (vector.length != values[0].length) throw new RuntimeException();
 
         Double[] result = new Double[values.length];
@@ -63,7 +92,7 @@ public class MojaMacierz<T extends Number> {
         for (int i = 0; i < result.length; i++){
             double sum = 0;
             for (int j = 0; j < values[0].length; j++){
-                sum += values[i][j].doubleValue() * vector[j];
+                sum += values[i][j].doubleValue() * vector[j][0];
             }
             result[i] = sum;
         }
