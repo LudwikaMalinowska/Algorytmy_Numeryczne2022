@@ -362,6 +362,55 @@ public class TestMacierz {
         return sm_x;
     }
 
+
+    public void testGaussGFloat(int rows, int columns){
+        float[][] arr_a = this.fillMatrixFloat(rows, columns);
+        float[][] arr_x = this.fillMatrixFloat(rows, 1);
+        SimpleMatrix sm_a = new SimpleMatrix(arr_a);
+        SimpleMatrix sm_x = new SimpleMatrix(arr_x);
+        SimpleMatrix sm_b = sm_a.mult(sm_x);
+
+        long start = System.currentTimeMillis();
+        SimpleMatrix result_1 = sm_a.solve(sm_b);
+        //time
+        long finish = System.currentTimeMillis();
+        long timeElapsed1 = finish - start;
+
+
+
+
+        Float[][] bFloat = simpleMatrixToFloat(sm_b);
+        Float[][] my_arr1 = matrixfloatToFloat(arr_a);
+        MojaMacierz<Float> mm_a = new MojaMacierz<>(my_arr1);
+
+        System.out.println("Before: ");
+        for (float[] row : arr_a){
+            System.out.println(Arrays.toString(row));
+        }
+
+        start = System.currentTimeMillis();
+        MojeRownanie<Float> mojeRownanie = new MojeRownanie<>(mm_a, bFloat, Float.class);
+        Float[][] my_result = mojeRownanie.solveGaussG();
+        MojaMacierz<Float> my_result_mm = new MojaMacierz<>(my_result);
+        finish = System.currentTimeMillis();
+        long timeElapsed2 = finish - start;
+
+        Float[][] data = simpleMatrixToFloat(result_1);
+        MojaMacierz<Float> sm_to_mm = new MojaMacierz<>(data);
+        MojaMacierz<Float> roznice = sm_to_mm.subtract(my_result_mm);
+
+        System.out.println(Arrays.deepToString(roznice.getValues()));
+        MojaMacierz<Float> rozniceAbs = roznice.abs();
+        System.out.println(Arrays.deepToString(rozniceAbs.getValues()));
+
+        System.out.println("\ntime1: " + timeElapsed1 + "\ntime2: " + timeElapsed2);
+        System.out.println("After: ");
+        for (Float[] row : mojeRownanie.getOriginalMatrix()){
+            System.out.println(Arrays.toString(row));
+        }
+    }
+
+
     public void testGaussGDouble(int rows, int columns){
         double[][] arr_a = this.fillMatrixDouble(rows, columns);
         double[][] arr_x = this.fillMatrixDouble(rows, 1);
@@ -369,17 +418,44 @@ public class TestMacierz {
         SimpleMatrix sm_x = new SimpleMatrix(arr_x);
         SimpleMatrix sm_b = sm_a.mult(sm_x);
 
+        long start = System.currentTimeMillis();
         SimpleMatrix result_1 = sm_a.solve(sm_b);
         //time
+        long finish = System.currentTimeMillis();
+        long timeElapsed1 = finish - start;
+
+
+
 
         Double[][] bDouble = simpleMatrixToDouble(sm_b);
         Double[][] my_arr1 = matrixdoubleToDouble(arr_a);
         MojaMacierz<Double> mm_a = new MojaMacierz<>(my_arr1);
-//        MojaMacierz<Double> mm_b = new MojaMacierz<>(bDouble);
-//        Double[] my = Arrays.stream(bDouble)
-//                .flatMap(o -> Arrays.stream(o))
-//                .toArray();
-        MojeRownanie<Double> mojeRownanie = new MojeRownanie<>(mm_a, bDouble);
+
+        System.out.println("Before: ");
+        for (double[] row : arr_a){
+            System.out.println(Arrays.toString(row));
+        }
+
+        start = System.currentTimeMillis();
+        MojeRownanie<Double> mojeRownanie = new MojeRownanie<>(mm_a, bDouble, Double.class);
+        Double[][] my_result = mojeRownanie.solveGaussG();
+        MojaMacierz<Double> my_result_mm = new MojaMacierz<>(my_result);
+        finish = System.currentTimeMillis();
+        long timeElapsed2 = finish - start;
+
+        Double[][] data = simpleMatrixToDouble(result_1);
+        MojaMacierz<Double> sm_to_mm = new MojaMacierz<>(data);
+        MojaMacierz<Double> roznice = sm_to_mm.subtract(my_result_mm);
+
+        System.out.println(Arrays.deepToString(roznice.getValues()));
+        MojaMacierz<Double> rozniceAbs = roznice.abs();
+        System.out.println(Arrays.deepToString(rozniceAbs.getValues()));
+
+        System.out.println("\ntime1: " + timeElapsed1 + "\ntime2: " + timeElapsed2);
+        System.out.println("After: ");
+        for (Double[] row : mojeRownanie.getOriginalMatrix()){
+            System.out.println(Arrays.toString(row));
+        }
     }
 
     public static float randomFloat(){
@@ -416,12 +492,14 @@ public class TestMacierz {
         };
 
         TestMacierz testMacierz = new TestMacierz();
-        testMacierz.testAXFloat(10,10);
+//        testMacierz.testAXFloat(10,10);
 //        testMacierz.testAXDouble(10,10);
 //        testMacierz.testABCXfloat(10,10);
 //        testMacierz.testABCXdouble(10,10);
 //        testMacierz.testABCfloat(10,10);
 //        testMacierz.testABCdouble(10,10);
+//        testMacierz.testGaussGDouble(4,4);
+        testMacierz.testGaussGFloat(4,4);
 
 
 

@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -7,13 +8,50 @@ public class MojeRownanie<T extends Number> {
     private final T[][] originalB;
     private final T[][] values;
     private final T[][] b;
+    private Class<T> clazz;
 
-    public MojeRownanie(MojaMacierz<T> values, T[][] b) {
-        this.originalMatrix = values.getValues();
-        this.originalB = b;
-        this.values = values.getValues();
-        this.b = b;
+    public MojeRownanie(MojaMacierz<T> values, T[][] b, Class<T> clazz) {
+        this.originalMatrix = deepCopy(values.getValues());
+        this.originalB = deepCopy(b);
+        this.values = deepCopy(values.getValues());
+        this.b = deepCopy(b);
+        this.clazz = clazz;
     }
+
+    private T convertToType(Class<T> clazz,String str) {
+        try {
+            return clazz.getConstructor(String.class).newInstance(str);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    // https://stackoverflow.com/a/36804604/10476860
+
+    private T[][] convertArrayToType(Class<T> clazz, Double[][] arr) {
+        T[][] arr2 = (T[][]) Array.newInstance(clazz, arr.length);
+        try {
+            for (int i = 0; i < arr2.length; i++){
+                for (int j = 0; j < arr2[0].length; j++){
+                    arr2[i][j] = convertToType(clazz, String.valueOf(arr[i][j]));
+                }
+            }
+
+            return arr2;
+
+//            return clazz.getConstructor(String.class).newInstance(str);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static <T> T[][] deepCopy(T[][] matrix) {
+        return Arrays.stream(matrix)
+                .map(arr -> arr.clone())
+                .toArray(s -> matrix.clone());
+    }
+    // https://stackoverflow.com/questions/1564832/how-do-i-do-a-deep-copy-of-a-2d-array-in-java
 
     public T[][] getOriginalMatrix() {
         return originalMatrix;
@@ -31,19 +69,19 @@ public class MojeRownanie<T extends Number> {
         return b;
     }
 
-    public Double[] solveGaussFG(){
+    public T[][] solveGaussFG(){
         Integer[] Q = this.gaussFGkrok1();
 //        T[] b1 = (T[]) r[0];
 //        Integer[] Q = (Integer[]) r[1];
 
-        Double[] result = this.gaussKrok2();
+        T[][] result = this.gaussKrok2();
         System.out.println("Q: " + Arrays.toString(Q));
 
-        Double[] res1 = new Double[values[0].length];
+        T[][] res1 = (T[][]) new Object[values[0].length][1];
         List<Integer> Qlist = Arrays.asList(Q);
         for (int i = 0; i < values[0].length; i++){
             int idx = Qlist.indexOf(i);
-            res1[i] = result[idx];
+            res1[i][0] = result[idx][0];
         }
 
         System.out.println("res:" + Arrays.toString(result));
@@ -61,14 +99,41 @@ public class MojeRownanie<T extends Number> {
         return b;
     }
 
-    private Double[] gaussKrok2(){
-        Double[] x = new Double[b.length];
+//    private T[][] gaussKrok2(){
+//        Double[][] x = new Double[b.length][1];
+//        int i = values.length;
+//        int j = values[0].length;
+//        double Bn = b[b.length-1][0].doubleValue();
+//        double Ann = values[i-1][j-1].doubleValue();
+//        //Xn
+//        x[x.length-1][0] = Bn / Ann;
+//        for (int k = x.length-2; k >= 0 ; k--){
+//            System.out.println(k);
+//            double bk = b[k][0].doubleValue();
+//            double akk = values[k][k].doubleValue();
+//            double sum = 0;
+//            for (int n = k; n < values[0].length-1; n++){
+//                double ak = values[k][n+1].doubleValue();
+//                sum += ak * x[n+1][0];
+//            }
+//
+//            x[k][0] = (bk - sum) / akk;
+//        }
+//
+////        T[][] x_t = convertArrayToType(clazz, x);
+//        T[][] x_t = (T[][]) x;
+//        return x_t;
+//    }
+
+
+    private T[][] gaussKrok2(){
+        T[][] x = (T[][]) new Object[b.length][1];
         int i = values.length;
         int j = values[0].length;
         double Bn = b[b.length-1][0].doubleValue();
         double Ann = values[i-1][j-1].doubleValue();
         //Xn
-        x[x.length-1] = Bn / Ann;
+        x[x.length-1][0] = convertToType(clazz, String.valueOf(Bn / Ann));
         for (int k = x.length-2; k >= 0 ; k--){
             System.out.println(k);
             double bk = b[k][0].doubleValue();
@@ -76,18 +141,21 @@ public class MojeRownanie<T extends Number> {
             double sum = 0;
             for (int n = k; n < values[0].length-1; n++){
                 double ak = values[k][n+1].doubleValue();
-                sum += ak * x[n+1];
+                sum += ak * x[n+1][0].doubleValue();
             }
 
-            x[k] = (bk - sum) / akk;
+            double val = (bk - sum) / akk;
+            x[k][0] = convertToType(clazz, String.valueOf(val));
         }
 
+//        T[][] x_t = convertArrayToType(clazz, x);
+//        T[][] x_t = x;
         return x;
     }
 
-    public Double[] solveGaussG(){
+    public T[][] solveGaussG(){
         T[][] b2 = this.elGaussKrok1();
-        Double[] result = this.gaussKrok2();
+        T[][] result = this.gaussKrok2();
 
         return result;
     }
@@ -110,11 +178,12 @@ public class MojeRownanie<T extends Number> {
 //                    System.out.println(mi);
                 Double val = values[i][j].doubleValue() -
                         (values[k-1][j].doubleValue() * m[mi]);
-                values[i][j] = (T) val;
+                T val_t = convertToType(clazz, String.valueOf(val));
+                values[i][j] = val_t;
             }
 
             Double valB = b[i][0].doubleValue() - (m[mi] * b[k-1][0].doubleValue());
-            b[i][0] = (T) valB;
+            b[i][0] = convertToType(clazz, String.valueOf(valB));
 
             mi++;
         }
@@ -144,9 +213,9 @@ public class MojeRownanie<T extends Number> {
         return b1;
     }
 
-    public Double[] solveGaussPG(){
+    public T[][] solveGaussPG(){
         T[][] b1 = this.gaussPGkrok1();
-        Double[] result = this.gaussKrok2();
+        T[][] result = this.gaussKrok2();
 
         return result;
     }
