@@ -29,7 +29,7 @@ public class MojeRownanie<T extends Number> {
     // https://stackoverflow.com/a/36804604/10476860
 
     private T[][] convertArrayToType(Class<T> clazz, Double[][] arr) {
-        T[][] arr2 = (T[][]) Array.newInstance(clazz, arr.length);
+        T[][] arr2 = (T[][]) Array.newInstance(clazz, arr.length, arr[0].length);
         try {
             for (int i = 0; i < arr2.length; i++){
                 for (int j = 0; j < arr2[0].length; j++){
@@ -75,17 +75,17 @@ public class MojeRownanie<T extends Number> {
 //        Integer[] Q = (Integer[]) r[1];
 
         T[][] result = this.gaussKrok2();
-        System.out.println("Q: " + Arrays.toString(Q));
+//        System.out.println("Q: " + Arrays.toString(Q));
 
-        T[][] res1 = (T[][]) new Object[values[0].length][1];
+        T[][] res1 = (T[][]) Array.newInstance(clazz, values.length, 1);
         List<Integer> Qlist = Arrays.asList(Q);
         for (int i = 0; i < values[0].length; i++){
             int idx = Qlist.indexOf(i);
             res1[i][0] = result[idx][0];
         }
 
-        System.out.println("res:" + Arrays.toString(result));
-        System.out.println("res1:" + Arrays.toString(res1));
+//        System.out.println("res:" + Arrays.toString(result));
+//        System.out.println("res1:" + Arrays.toString(res1));
         return res1;
     }
 
@@ -99,35 +99,9 @@ public class MojeRownanie<T extends Number> {
         return b;
     }
 
-//    private T[][] gaussKrok2(){
-//        Double[][] x = new Double[b.length][1];
-//        int i = values.length;
-//        int j = values[0].length;
-//        double Bn = b[b.length-1][0].doubleValue();
-//        double Ann = values[i-1][j-1].doubleValue();
-//        //Xn
-//        x[x.length-1][0] = Bn / Ann;
-//        for (int k = x.length-2; k >= 0 ; k--){
-//            System.out.println(k);
-//            double bk = b[k][0].doubleValue();
-//            double akk = values[k][k].doubleValue();
-//            double sum = 0;
-//            for (int n = k; n < values[0].length-1; n++){
-//                double ak = values[k][n+1].doubleValue();
-//                sum += ak * x[n+1][0];
-//            }
-//
-//            x[k][0] = (bk - sum) / akk;
-//        }
-//
-////        T[][] x_t = convertArrayToType(clazz, x);
-//        T[][] x_t = (T[][]) x;
-//        return x_t;
-//    }
-
-
     private T[][] gaussKrok2(){
-        T[][] x = (T[][]) new Object[b.length][1];
+//        Double[][] x = new Double[b.length][1];
+        T[][] x = (T[][]) Array.newInstance(clazz, b.length, 1);
         int i = values.length;
         int j = values[0].length;
         double Bn = b[b.length-1][0].doubleValue();
@@ -135,7 +109,7 @@ public class MojeRownanie<T extends Number> {
         //Xn
         x[x.length-1][0] = convertToType(clazz, String.valueOf(Bn / Ann));
         for (int k = x.length-2; k >= 0 ; k--){
-            System.out.println(k);
+//            System.out.println(k);
             double bk = b[k][0].doubleValue();
             double akk = values[k][k].doubleValue();
             double sum = 0;
@@ -149,11 +123,40 @@ public class MojeRownanie<T extends Number> {
         }
 
 //        T[][] x_t = convertArrayToType(clazz, x);
-//        T[][] x_t = x;
+//        T[][] x_t = (T[][]) x;
         return x;
     }
 
+//
+//    private T[][] gaussKrok2(){
+//        T[][] x = (T[][]) new Object[b.length][1];
+//        int i = values.length;
+//        int j = values[0].length;
+//        double Bn = b[b.length-1][0].doubleValue();
+//        double Ann = values[i-1][j-1].doubleValue();
+//        //Xn
+//        x[x.length-1][0] = convertToType(clazz, String.valueOf(Bn / Ann));
+//        for (int k = x.length-2; k >= 0 ; k--){
+//            System.out.println(k);
+//            double bk = b[k][0].doubleValue();
+//            double akk = values[k][k].doubleValue();
+//            double sum = 0;
+//            for (int n = k; n < values[0].length-1; n++){
+//                double ak = values[k][n+1].doubleValue();
+//                sum += ak * x[n+1][0].doubleValue();
+//            }
+//
+//            double val = (bk - sum) / akk;
+//            x[k][0] = convertToType(clazz, String.valueOf(val));
+//        }
+//
+////        T[][] x_t = convertArrayToType(clazz, x);
+////        T[][] x_t = x;
+//        return x;
+//    }
+
     public T[][] solveGaussG(){
+
         T[][] b2 = this.elGaussKrok1();
         T[][] result = this.gaussKrok2();
 
@@ -162,19 +165,20 @@ public class MojeRownanie<T extends Number> {
 
     private T[][] k1(int k){
         Double[] m = new Double[values.length -k];
+
         for (int i = 0; i < m.length; i++){
-            System.out.println("-----");
-            System.out.println(i-1);
+//            System.out.println("-----");
+//            System.out.println(i-1);
             m[i] = values[i+k][k-1].doubleValue() / values[k-1][k-1].doubleValue();
         }
 
-        System.out.println("m:" + Arrays.toString(m)); //ok
+//        System.out.println("m:" + Arrays.toString(m)); //ok
 
 
         int mi = 0;
         for (int i = k; i < values.length; i++){
             for (int j = k-1; j < values[0].length; j++){
-                System.out.printf("[%d][%d]", i, j);
+//                System.out.printf("[%d][%d]", i, j);
 //                    System.out.println(mi);
                 Double val = values[i][j].doubleValue() -
                         (values[k-1][j].doubleValue() * m[mi]);
@@ -234,7 +238,7 @@ public class MojeRownanie<T extends Number> {
 
     private Integer[] gaussFGkrok1(){
         T[][] b1 = b;
-        int[] Q = new int[]{0,1,2,3}; //values.len
+        int[] Q = IntStream.rangeClosed(0, values.length-1).toArray(); //values.len
 
         for (int k = 0; k < values.length; k++){
             int[] t = maxInRange(values, k);
@@ -284,8 +288,8 @@ public class MojeRownanie<T extends Number> {
             col2[i] = values[i][kol].doubleValue();
         }
         for (int i = k; i < values.length; i++){
-            values[i][k] = (T) col2[i];
-            values[i][kol] = (T) col1[i];
+            values[i][k] = convertToType(clazz, String.valueOf(col2[i]));
+            values[i][kol] = convertToType(clazz, String.valueOf(col1[i]));
         }
     }
 

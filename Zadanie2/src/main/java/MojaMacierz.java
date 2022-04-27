@@ -1,22 +1,34 @@
-
+import java.lang.reflect.Array;
 
 //przyjmuje dowolny typ liczby, ale z uwagi na to jak zaimplementowane są liczby w
 // javie, oraz że typy generyczne nie są przystosowane do matematyki
 // metody zwracają double
 public class MojaMacierz<T extends Number> {
     private final T[][] values;
+    private Class<T> clazz;
 
-    public MojaMacierz(T[][] values) {
+    public MojaMacierz(T[][] values, Class<T> clazz) {
         this.values = values;
+        this.clazz = clazz;
     }
 
     public T[][] getValues() {
         return values;
     }
 
-    private MojaMacierz<T> convert(Double[][] m1){
-        return new MojaMacierz<T>((T[][]) m1);
+    private MojaMacierz<T> convert(T[][] m1){
+        return new MojaMacierz<T>(m1, clazz);
     }
+
+    private T convertToType(Class<T> clazz,String str) {
+        try {
+            return clazz.getConstructor(String.class).newInstance(str);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    // https://stackoverflow.com/a/36804604/10476860
 
 
 
@@ -26,11 +38,13 @@ public class MojaMacierz<T extends Number> {
         if (values.length != other.length || values[0].length != other[0].length)
             throw new RuntimeException();
 
-        Double[][] result = new Double[values.length][values.length];
+//        Double[][] result = new Double[values.length][values.length];
+        T[][] result = (T[][]) Array.newInstance(clazz, other.length, other[0].length);
 
         for (int i = 0; i < values.length; i++){
             for (int j = 0; j < values[0].length; j++){
-                result[i][j] = (values[i][j].doubleValue() + other[i][j].doubleValue());
+                result[i][j] = convertToType(clazz,String.valueOf(values[i][j].doubleValue()
+                        + other[i][j].doubleValue()));
             }
         }
 
@@ -43,11 +57,12 @@ public class MojaMacierz<T extends Number> {
         if (values.length != other.length || values[0].length != other[0].length)
             throw new RuntimeException();
 
-        Double[][] result = new Double[values.length][values[0].length];
+        T[][] result = (T[][]) Array.newInstance(clazz, values.length, values[0].length);
 
         for (int i = 0; i < values.length; i++){
             for (int j = 0; j < values[0].length; j++){
-                result[i][j] = (values[i][j].doubleValue() - other[i][j].doubleValue());
+                result[i][j] = convertToType(clazz, String.valueOf(values[i][j].doubleValue()
+                        - other[i][j].doubleValue()));
             }
         }
 
@@ -55,11 +70,12 @@ public class MojaMacierz<T extends Number> {
     }
 
     public MojaMacierz<T> abs(){
-        Double[][] result = new Double[values.length][values[0].length];
+        T[][] result = (T[][]) Array.newInstance(clazz, values.length, values[0].length);
 
         for (int i = 0; i < values.length; i++){
             for (int j = 0; j < values[0].length; j++){
-                result[i][j] = Math.abs((Double) values[i][j]);
+                result[i][j] = convertToType(clazz, String.valueOf(Math.abs(
+                        values[i][j].doubleValue())));
             }
         }
 
@@ -69,7 +85,8 @@ public class MojaMacierz<T extends Number> {
     public MojaMacierz<T> multiply(MojaMacierz<T> otherMatrix){
         T[][] other = otherMatrix.getValues();
         if (values[0].length != other.length) throw new RuntimeException();
-        Double[][] result = new Double[values.length][other[0].length];
+        T[][] result = (T[][]) Array.newInstance(clazz, values.length, other[0].length);
+//        String[][] result = new String[values.length][other[0].length];
 
         for (int i = 0; i < result.length; i++){
             for (int j = 0; j < result[0].length; j++){
@@ -78,9 +95,11 @@ public class MojaMacierz<T extends Number> {
                 for (int p = 0; p < values[0].length; p++){
                     sum += values[i][p].doubleValue() * other[p][j].doubleValue();
                 }
-                result[i][j] = sum;
+                result[i][j] = convertToType(clazz, String.valueOf(sum));
+//                result[i][j] = String.valueOf(sum);
             }
         }
+
         return this.convert(result);
     }
 
@@ -145,6 +164,6 @@ public class MojaMacierz<T extends Number> {
         };
         Double[] b3 = new Double[]{2.0, 8.0};
 
-        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7);
+        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7, Double.class);
     }
 }

@@ -11,7 +11,7 @@ public class Main {
         };
         Double[] b2 = new Double[]{4.0,2.0,0.0,6.0};
 
-        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7);
+        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7, Double.class);
 //        MojeRownanie<Double> r1 = new MojeRownanie<>(m1, b2);
 //        Double[] solved1 = r1.solveGaussPG();
 //
@@ -35,8 +35,8 @@ public class Main {
                 {2.0},
 
         };
-        MojaMacierz<Double> m3 = new MojaMacierz<>(arr9);
-        MojaMacierz<Double> m4 = new MojaMacierz<>(arr9);
+        MojaMacierz<Double> m3 = new MojaMacierz<>(arr9, Double.class);
+        MojaMacierz<Double> m4 = new MojaMacierz<>(arr9, Double.class);
 
         MojaMacierz<Double> m2 = m3.subtract(m4);
         for (Double[] row : m2.getValues()){
