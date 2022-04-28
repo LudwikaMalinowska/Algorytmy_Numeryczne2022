@@ -1,6 +1,10 @@
 
 import org.ejml.simple.SimpleMatrix;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -490,11 +494,11 @@ public class TestMacierz {
         Double[][] my_arr1 = matrixdoubleToDouble(arr_a);
         MojaMacierz<Double> mm_a = new MojaMacierz<>(my_arr1, clazz);
 
-        System.out.println("Before: ");
-        for (double[] row : arr_a){
-            System.out.println(Arrays.toString(row));
-        }
-        System.out.println("\n");
+//        System.out.println("Before: ");
+//        for (double[] row : arr_a){
+//            System.out.println(Arrays.toString(row));
+//        }
+//        System.out.println("\n");
 
         start = System.currentTimeMillis();
         MojeRownanie<Double> mojeRownanie = new MojeRownanie<>(mm_a, bDouble, Double.class);
@@ -515,27 +519,27 @@ public class TestMacierz {
         MojaMacierz<Double> sm_to_mm = new MojaMacierz<>(data, clazz);
         MojaMacierz<Double> roznice = sm_to_mm.subtract(my_result_mm);
 
-        System.out.println("\nRóżnice: ");
-        System.out.println(Arrays.deepToString(roznice.getValues()) + "\n");
+        //System.out.println("\nRóżnice: ");
+        //System.out.println(Arrays.deepToString(roznice.getValues()) + "\n");
         MojaMacierz<Double> rozniceAbs = roznice.abs();
-        System.out.println("\nRóżnice abs: ");
-        System.out.println(Arrays.deepToString(rozniceAbs.getValues()) + "\n");
+        //System.out.println("\nRóżnice abs: ");
+        //System.out.println(Arrays.deepToString(rozniceAbs.getValues()) + "\n");
 
-        System.out.println("\ntime1: " + timeElapsed1 + "\ntime2: " + timeElapsed2);
+        //System.out.println("\ntime1: " + timeElapsed1 + "\ntime2: " + timeElapsed2);
 //        System.out.println("After: ");
 //        for (Double[] row : mojeRownanie.getOriginalMatrix()){
 //            System.out.println(Arrays.toString(row));
 //        }
 
 
-        System.out.println("Oryginalne X: ");
-        System.out.println(Arrays.deepToString(arr_x));
-
-        System.out.println("Result (biblioteka): ");
-        System.out.println(Arrays.deepToString(data));
-
-        System.out.println("My result: ");
-        System.out.println(Arrays.deepToString(my_result));
+//        System.out.println("Oryginalne X: ");
+//        System.out.println(Arrays.deepToString(arr_x));
+//
+//        System.out.println("Result (biblioteka): ");
+//        System.out.println(Arrays.deepToString(data));
+//
+//        System.out.println("My result: ");
+//        System.out.println(Arrays.deepToString(my_result));
 
     }
 
@@ -570,6 +574,53 @@ public class TestMacierz {
             }
 
         return sumTime / 10.0;
+    }
+
+    public String allGaussTime(int size){
+        TestMacierz testMacierz = new TestMacierz();
+        double timeGaussGFloat = testMacierz.meanTimeOf10Gauss(size,"without", "float");
+        double timeGaussPGFloat = testMacierz.meanTimeOf10Gauss(size, "partial", "float");
+        double timeGaussFGFloat = testMacierz.meanTimeOf10Gauss(size,"full", "float");
+
+        double timeGaussGDouble = testMacierz.meanTimeOf10Gauss(size,"without", "double");
+        double timeGaussPGDouble = testMacierz.meanTimeOf10Gauss(size,"partial", "double");
+        double timeGaussFGDouble = testMacierz.meanTimeOf10Gauss(size, "full", "double");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(size).append(",")
+                .append(timeGaussGFloat).append(",")
+                .append(timeGaussPGFloat).append(",")
+                .append(timeGaussFGFloat).append(",")
+                .append(timeGaussGDouble).append(",")
+                .append(timeGaussPGDouble).append(",")
+                .append(timeGaussFGDouble).append("\n");
+
+        return stringBuilder.toString();
+    }
+
+    public void writeToCsv(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("size").append(",")
+                .append("timeGaussGFloat").append(",")
+                .append("timeGaussPGFloat").append(",")
+                .append("timeGaussFGFloat").append(",")
+                .append("timeGaussGDouble").append(",")
+                .append("timeGaussPGDouble").append(",")
+                .append("timeGaussFGDouble").append("\n");
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File("time_my_gauss.csv")))) {
+            bw.write(sb.toString());
+            sb.setLength(0);
+
+            for (int i = 25; i < 500; i+=25){
+                String s = allGaussTime(i);
+                System.out.println(s);
+
+                bw.write(s);
+            }
+        } catch (IOException e){
+        System.out.println(e);
+        }
+
     }
 
     public static void main(String[] args) {
@@ -626,28 +677,14 @@ public class TestMacierz {
 //        MojaMacierz<Float> mm2 = new MojaMacierz<>(vector2, Float.class);
 //        MojaMacierz<Float> mm3 = mm1.multiply(mm2);
 //        System.out.println(Arrays.deepToString(mm3.getValues()));
-    
-        int size = 50;
-        double timeGaussGFloat = testMacierz.meanTimeOf10Gauss(size,"without", "float");
-        double timeGaussPGFloat = testMacierz.meanTimeOf10Gauss(size, "partial", "float");
-        double timeGaussFGFloat = testMacierz.meanTimeOf10Gauss(size,"full", "float");
-        
-        double timeGaussGDouble = testMacierz.meanTimeOf10Gauss(size,"without", "double");
-        double timeGaussPGDouble = testMacierz.meanTimeOf10Gauss(size,"partial", "double");
-        double timeGaussFGDouble = testMacierz.meanTimeOf10Gauss(size, "full", "double");
-        
 
-        
-        System.out.println(timeGaussGFloat);
-        System.out.println(timeGaussPGFloat);
-        System.out.println(timeGaussFGFloat);
 
-        System.out.println(timeGaussGDouble);
-        System.out.println(timeGaussPGDouble);
-        System.out.println(timeGaussFGDouble);
+//        testMacierz.allGaussTime(50);
+//        testMacierz.allGaussTime(100);
 
-        size = 100;
-
+//        testMacierz.writeToCsv();
+//        String s = testMacierz.allGaussTime(500);
+//        System.out.println(s);
 
 
 
