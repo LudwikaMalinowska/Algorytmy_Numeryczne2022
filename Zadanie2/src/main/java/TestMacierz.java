@@ -483,24 +483,13 @@ public class TestMacierz {
         SimpleMatrix sm_x = new SimpleMatrix(arr_x);
         SimpleMatrix sm_b = sm_a.mult(sm_x);
 
-        long start = System.currentTimeMillis();
         SimpleMatrix result_1 = sm_a.solve(sm_b);
-        //time
-        long finish = System.currentTimeMillis();
-        long timeElapsed1 = finish - start;
 
 
         Double[][] bDouble = simpleMatrixToDouble(sm_b);
         Double[][] my_arr1 = matrixdoubleToDouble(arr_a);
         MojaMacierz<Double> mm_a = new MojaMacierz<>(my_arr1, clazz);
 
-//        System.out.println("Before: ");
-//        for (double[] row : arr_a){
-//            System.out.println(Arrays.toString(row));
-//        }
-//        System.out.println("\n");
-
-        start = System.currentTimeMillis();
         MojeRownanie<Double> mojeRownanie = new MojeRownanie<>(mm_a, bDouble, Double.class);
         Double[][] my_result;
         if (method.equals("full"))
@@ -511,37 +500,105 @@ public class TestMacierz {
             my_result = mojeRownanie.solveGaussG();
 
         MojaMacierz<Double> my_result_mm = new MojaMacierz<>(my_result, clazz);
-        finish = System.currentTimeMillis();
-        long timeElapsed2 = finish - start;
-//        System.out.println("\n aaa");
+
 
         Double[][] data = simpleMatrixToDouble(result_1);
         MojaMacierz<Double> sm_to_mm = new MojaMacierz<>(data, clazz);
         MojaMacierz<Double> roznice = sm_to_mm.subtract(my_result_mm);
 
-        //System.out.println("\nRóżnice: ");
-        //System.out.println(Arrays.deepToString(roznice.getValues()) + "\n");
         MojaMacierz<Double> rozniceAbs = roznice.abs();
-        //System.out.println("\nRóżnice abs: ");
-        //System.out.println(Arrays.deepToString(rozniceAbs.getValues()) + "\n");
-
-        //System.out.println("\ntime1: " + timeElapsed1 + "\ntime2: " + timeElapsed2);
-//        System.out.println("After: ");
-//        for (Double[] row : mojeRownanie.getOriginalMatrix()){
-//            System.out.println(Arrays.toString(row));
-//        }
-
-
-//        System.out.println("Oryginalne X: ");
-//        System.out.println(Arrays.deepToString(arr_x));
-//
-//        System.out.println("Result (biblioteka): ");
-//        System.out.println(Arrays.deepToString(data));
-//
-//        System.out.println("My result: ");
-//        System.out.println(Arrays.deepToString(my_result));
+        //ale od x oryginalnej różnice
 
     }
+
+    public String doubleGaussError(int size){
+        Class<Double> clazz = Double.class;
+        double[][] arr_a = this.fillMatrixDouble(size, size);
+        double[][] arr_x = this.fillMatrixDouble(size, 1);
+        SimpleMatrix sm_a = new SimpleMatrix(arr_a);
+        SimpleMatrix sm_x = new SimpleMatrix(arr_x);
+        SimpleMatrix sm_b = sm_a.mult(sm_x);
+
+        Double[][] bDouble = simpleMatrixToDouble(sm_b);
+        Double[][] my_arr1 = matrixdoubleToDouble(arr_a);
+        MojaMacierz<Double> mm_a = new MojaMacierz<>(my_arr1, clazz);
+        MojeRownanie<Double> mojeRownanie1 = new MojeRownanie<>(mm_a, bDouble, clazz);
+        MojeRownanie<Double> mojeRownanie2 = new MojeRownanie<>(mm_a, bDouble, clazz);
+        MojeRownanie<Double> mojeRownanie3 = new MojeRownanie<>(mm_a, bDouble, clazz);
+        Double[][] my_result1 = mojeRownanie1.solveGaussG();
+        Double[][] my_result2 = mojeRownanie2.solveGaussPG();
+        Double[][] my_result3 = mojeRownanie3.solveGaussFG();
+
+        Double[][] xDouble = this.matrixdoubleToDouble(arr_x);
+//        MojaMacierz<Double> mm_x = new MojaMacierz<>(xDouble, clazz);
+
+        double err1 = averageErrorInArrDouble(my_result1, xDouble);
+        double err2 = averageErrorInArrDouble(my_result2, xDouble);
+        double err3 = averageErrorInArrDouble(my_result3, xDouble);
+
+        return err1 + "," + err2 + "," + err3 + "\n";
+    }
+//
+    public String floatGaussError(int size){
+        Class<Float> clazz = Float.class;
+        float[][] arr_a = this.fillMatrixFloat(size, size);
+        float[][] arr_x = this.fillMatrixFloat(size, 1);
+        SimpleMatrix sm_a = new SimpleMatrix(arr_a);
+        SimpleMatrix sm_x = new SimpleMatrix(arr_x);
+        SimpleMatrix sm_b = sm_a.mult(sm_x);
+
+        Float[][] bFloat = simpleMatrixToFloat(sm_b);
+        Float[][] my_arr1 = matrixfloatToFloat(arr_a);
+        MojaMacierz<Float> mm_a = new MojaMacierz<>(my_arr1, clazz);
+        MojeRownanie<Float> mojeRownanie1 = new MojeRownanie<>(mm_a, bFloat, clazz);
+        MojeRownanie<Float> mojeRownanie2 = new MojeRownanie<>(mm_a, bFloat, clazz);
+        MojeRownanie<Float> mojeRownanie3 = new MojeRownanie<>(mm_a, bFloat, clazz);
+        Float[][] my_result1 = mojeRownanie1.solveGaussG();
+        Float[][] my_result2 = mojeRownanie2.solveGaussPG();
+        Float[][] my_result3 = mojeRownanie3.solveGaussFG();
+
+        Float[][] xFloat = this.matrixfloatToFloat(arr_x);
+        MojaMacierz<Float> mm_x = new MojaMacierz<>(xFloat, clazz);
+
+        float err1 = averageErrorInArrFloat(my_result1, mm_x);
+        float err2 = averageErrorInArrFloat(my_result2, mm_x);
+        float err3 = averageErrorInArrFloat(my_result3, mm_x);
+
+        return err1 + "," + err2 + "," + err3 + ",";
+    }
+
+
+
+    public double averageErrorInArrDouble(Double[][] my_result1, Double[][] xDouble){
+        MojaMacierz<Double> mm_x = new MojaMacierz<>(xDouble, Double.class);
+        MojaMacierz<Double> mm_res1 = new MojaMacierz<>(my_result1, Double.class);
+        MojaMacierz<Double> rozniceAbs1 = mm_res1.subtract(mm_x).abs();
+
+        Double[][] roz_double = rozniceAbs1.getValues();
+        double sum = 0;
+        for (Double[] doubles : roz_double)
+            for (Double d : doubles)
+                sum += d;
+
+        double avg = sum / (roz_double.length * roz_double[0].length);
+        return avg;
+    }
+
+    public float averageErrorInArrFloat(Float[][] my_result1, MojaMacierz<Float> mm_x){
+        MojaMacierz<Float> mm_res1 = new MojaMacierz<>(my_result1, Float.class);
+        MojaMacierz<Float> rozniceAbs1 = mm_res1.subtract(mm_x).abs();
+
+        Float[][] roz_float = rozniceAbs1.getValues();
+        float sum = 0;
+        for (Float[] floats : roz_float)
+            for (Float f : floats)
+                sum += f;
+
+        float avg = sum / (roz_float.length * roz_float[0].length);
+        return avg;
+    }
+
+
 
     public static float randomFloat(){
         Random r = new Random();
@@ -597,7 +654,35 @@ public class TestMacierz {
         return stringBuilder.toString();
     }
 
-    public void writeToCsv(){
+    public void writeErrToCsv(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("size").append(",")
+                .append("errGaussGFloat").append(",")
+                .append("errGaussPGFloat").append(",")
+                .append("errGaussFGFloat").append(",")
+                .append("errGaussGDouble").append(",")
+                .append("errGaussPGDouble").append(",")
+                .append("errGaussFGDouble").append("\n");
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(
+                new File("err_my_gauss.csv")))) {
+            bw.write(sb.toString());
+            sb.setLength(0);
+
+            for (int i = 25; i <= 500; i+=25){
+                String s1 = floatGaussError(i);
+                String s2 = doubleGaussError(i);
+                System.out.println(i);
+
+                bw.write(i + "," + s1 + s2);
+            }
+        } catch (IOException e){
+            System.out.println(e);
+        }
+
+    }
+
+    public void writeTimeToCsv(){
         StringBuilder sb = new StringBuilder();
         sb.append("size").append(",")
                 .append("timeGaussGFloat").append(",")
@@ -660,32 +745,8 @@ public class TestMacierz {
         };
 
         TestMacierz testMacierz = new TestMacierz();
-//        testMacierz.testAXFloat(10,10);
-//        testMacierz.testAXDouble(10,10);
-//        testMacierz.testABCXfloat(10,10);
-//        testMacierz.testABCXdouble(10,10);
-//        testMacierz.testABCfloat(10,10);
-//        testMacierz.testABCdouble(10,10);
-//        testMacierz.testGaussDouble(4,4, "without");
-//        testMacierz.testGaussDouble(4,4, "partial");
-//        testMacierz.testGaussDouble(4,4, "full");
-//        testMacierz.testGaussGFloat(4,4, "without");
-//        testMacierz.testGaussGFloat(4,4, "partial");
-//        testMacierz.testGaussFloat(4,4, "full");
 
-//        MojaMacierz<Float> mm1 = new MojaMacierz<>(arr2, Float.class);
-//        MojaMacierz<Float> mm2 = new MojaMacierz<>(vector2, Float.class);
-//        MojaMacierz<Float> mm3 = mm1.multiply(mm2);
-//        System.out.println(Arrays.deepToString(mm3.getValues()));
-
-
-//        testMacierz.allGaussTime(50);
-//        testMacierz.allGaussTime(100);
-
-//        testMacierz.writeToCsv();
-//        String s = testMacierz.allGaussTime(500);
-//        System.out.println(s);
-
+        testMacierz.writeErrToCsv();
 
 
     }
