@@ -286,6 +286,42 @@ public class TestMacierz {
         return arr2;
     }
 
+
+    private double[][] matrixBigDoubleTodouble(Double[][] arr1){
+        double[][] arr2 = new double[arr1.length][arr1[0].length];
+        for (int i = 0; i < arr2.length; i++){
+            for (int j = 0; j < arr2[0].length; j++){
+                arr2[i][j] = arr1[i][j];
+            }
+        }
+
+        return arr2;
+    }
+
+    private Ulamek[][] matrixdoubleToUlamek(double[][] arr1){
+        Ulamek[][] arr2 = new Ulamek[arr1.length][arr1[0].length];
+        double pow2 = Math.pow(2, 16);
+        for (int i = 0; i < arr2.length; i++){
+            for (int j = 0; j < arr2[0].length; j++){
+                long val = (long) (arr1[i][j] * pow2);
+                arr2[i][j] = new Ulamek(val);
+            }
+        }
+
+        return arr2;
+    }
+
+    private Double[][] matrixUlamekToDouble(Ulamek[][] arr1){
+        Double[][] arr2 = new Double[arr1.length][arr1[0].length];
+        for (int i = 0; i < arr2.length; i++){
+            for (int j = 0; j < arr2[0].length; j++){
+                arr2[i][j] = arr1[i][j].doubleValue();
+            }
+        }
+
+        return arr2;
+    }
+
     private double[][] fillMatrixDouble(int rows, int columns){
         double[][] arr1 = new double[rows][columns];
         for (int i = 0; i < arr1.length; i++){
@@ -567,6 +603,40 @@ public class TestMacierz {
         return err1 + "," + err2 + "," + err3 + ",";
     }
 
+    public String ulamekGaussError(int size){
+        Class<Ulamek> clazz = Ulamek.class;
+        double[][] arr_a = this.fillMatrixDouble(size, size);
+        double[][] arr_x = this.fillMatrixDouble(size, 1);
+        SimpleMatrix sm_a = new SimpleMatrix(arr_a);
+        SimpleMatrix sm_x = new SimpleMatrix(arr_x);
+        SimpleMatrix sm_b = sm_a.mult(sm_x);
+
+        Double[][] bDouble = simpleMatrixToDouble(sm_b);
+        double[][] arr_b = matrixBigDoubleTodouble(bDouble);
+        Ulamek[][] ulamek_b = matrixdoubleToUlamek(arr_b);
+        Ulamek[][] ulamek_a = matrixdoubleToUlamek(arr_a);
+        MojaMacierz<Ulamek> mm_a = new MojaMacierz<>(ulamek_a, clazz);
+        MojeRownanie<Ulamek> mojeRownanie1 = new MojeRownanie<Ulamek>(mm_a, ulamek_b, clazz);
+        MojeRownanie<Ulamek> mojeRownanie2 = new MojeRownanie<Ulamek>(mm_a, ulamek_b, clazz);
+        MojeRownanie<Ulamek> mojeRownanie3 = new MojeRownanie<Ulamek>(mm_a, ulamek_b, clazz);
+        Ulamek[][] my_result1 = mojeRownanie1.solveGaussG();
+        Ulamek[][] my_result2 = mojeRownanie1.solveGaussPG();
+        Ulamek[][] my_result3 = mojeRownanie1.solveGaussFG();
+
+
+        Double[][] xDouble = this.matrixdoubleToDouble(arr_x);
+        Double[][] res1_Double = this.matrixUlamekToDouble(my_result1);
+        Double[][] res2_Double = this.matrixUlamekToDouble(my_result2);
+        Double[][] res3_Double = this.matrixUlamekToDouble(my_result3);
+
+
+        double err1 = averageErrorInArrDouble(res1_Double, xDouble);
+        double err2 = averageErrorInArrDouble(res2_Double, xDouble);
+        double err3 = averageErrorInArrDouble(res3_Double, xDouble);
+
+        return err1 + "," + err2 + "," + err3 + "\n";
+    }
+
 
 
     public double averageErrorInArrDouble(Double[][] my_result1, Double[][] xDouble){
@@ -608,6 +678,15 @@ public class TestMacierz {
         float rand = (float) (rand1 / Math.pow(2, 16));
 
         return rand;
+    }
+
+    public static long randomLong(){
+        Random r = new Random();
+        long min = (long) (- Math.pow(2, 16));
+        long max = (long) Math.pow(2, 16) - 1;
+        float rand1 = min + r.nextFloat() * (max - min);
+//        System.out.println((long )rand1);
+        return (long) (rand1);
     }
 
     public static double randomDouble(){
@@ -682,6 +761,29 @@ public class TestMacierz {
 
     }
 
+    public void writeUlamekErrToCsv(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("size").append(",")
+                .append("errGaussGUlamek").append(",")
+                .append("errGaussPGUlamek").append(",")
+                .append("errGaussFGUlamek").append("\n");
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(
+                new File("err_my_gauss_ulamek.csv")))) {
+            bw.write(sb.toString());
+            sb.setLength(0);
+
+            for (int i = 25; i <= 500; i+=25){
+                String s2 = ulamekGaussError(i);
+                System.out.println(i);
+
+                bw.write(i + "," + s2);
+            }
+        } catch (IOException e){
+            System.out.println(e);
+        }
+    }
+
     public void writeTimeToCsv(){
         StringBuilder sb = new StringBuilder();
         sb.append("size").append(",")
@@ -746,8 +848,8 @@ public class TestMacierz {
 
         TestMacierz testMacierz = new TestMacierz();
 
-        testMacierz.writeErrToCsv();
-
+//        testMacierz.writeErrToCsv();
+        testMacierz.writeUlamekErrToCsv();
 
     }
 }
