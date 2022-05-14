@@ -71,12 +71,16 @@ public class MojeRownanie<T extends Number> {
 
     public T[][] solveGaussFG(){
         Integer[] Q = this.gaussFGkrok1();
+//        for (T[] row : values){
+//            System.out.println(Arrays.toString(row));
+//        }
 //        T[] b1 = (T[]) r[0];
 //        Integer[] Q = (Integer[]) r[1];
 
         T[][] result = this.gaussKrok2();
 //        System.out.println("Q: " + Arrays.toString(Q));
-
+//        System.out.println("result1:" + Arrays.deepToString(result));
+//        System.out.println("Q: " + Arrays.toString(Q));
         T[][] res1 = (T[][]) Array.newInstance(clazz, values.length, 1);
         List<Integer> Qlist = Arrays.asList(Q);
         for (int i = 0; i < values[0].length; i++){
@@ -240,6 +244,7 @@ public class MojeRownanie<T extends Number> {
         T[][] b1 = b;
         int[] Q = IntStream.rangeClosed(0, values.length-1).toArray(); //values.len
 
+
         for (int k = 0; k < values.length; k++){
             int[] t = maxInRange(values, k);
             int p = t[0];
@@ -247,19 +252,25 @@ public class MojeRownanie<T extends Number> {
 
             b1 = switchRow(b1, k, p);
 
-            if (!Arrays.equals(t, new int[]{k, k})){
-                switchCol(k, kol);
+            for (int l = 0; l < values.length; l++){
+                if (!Arrays.equals(t, new int[]{k, l})){
+                    int temp = Q[k];
+                    Q[k] = Q[kol];
+                    Q[kol] = temp;
 
-                int temp = Q[k];
-                Q[k] = Q[kol];
-                Q[kol] = temp;
+                    switchCol(k, kol);
+                    break;
+                }
             }
+
 
 
             b1 = k1(k+1);
         }
 
-        Integer[] q = IntStream.of( Q ).boxed().toArray( Integer[]::new );
+//        Integer[] q = IntStream.of( Q ).boxed().toArray( Integer[]::new );
+        Integer[] q = new Integer[Q.length];
+        for (int i = 0; i < Q.length; i++) q[i] = Q[i];
 //        Number[][] d = new Number[][]{b1, q};
 
         return q;
@@ -279,15 +290,28 @@ public class MojeRownanie<T extends Number> {
         return B;
     }
 
-    private void switchCol(int k, int kol){
-        Double[] col1 = new Double[values.length];
-        Double[] col2 = new Double[values.length];
+    public void switchCol(int k, int kol){
+//        Double[] col1 = new Double[values.length];
+//        Double[] col2 = new Double[values.length];
+//
+//        for (int i = k; i < values.length; i++){
+//            col1[i] = values[i][k].doubleValue();
+//            col2[i] = values[i][kol].doubleValue();
+//        }
+//        for (int i = k; i < values.length; i++){
+//            values[i][k] = convertToType(clazz, String.valueOf(col2[i]));
+//            values[i][kol] = convertToType(clazz, String.valueOf(col1[i]));
+//        }
+//        T[] col1 = new T[values.length];
+//        T[] col2 = new T[values.length];
+        T[] col1 = (T[]) Array.newInstance(clazz, values.length);
+        T[] col2 = (T[]) Array.newInstance(clazz, values.length);
 
-        for (int i = k; i < values.length; i++){
-            col1[i] = values[i][k].doubleValue();
-            col2[i] = values[i][kol].doubleValue();
+        for (int i = 0; i < values.length; i++){
+            col1[i] = values[i][k];
+            col2[i] = values[i][kol];
         }
-        for (int i = k; i < values.length; i++){
+        for (int i = 0; i < values.length; i++){
             values[i][k] = convertToType(clazz, String.valueOf(col2[i]));
             values[i][kol] = convertToType(clazz, String.valueOf(col1[i]));
         }
@@ -309,6 +333,30 @@ public class MojeRownanie<T extends Number> {
         return maxCords;
     }
 
+    public static void main(String[] args) {
+        Double[][] arr1 = new Double[][]{
+                {1.0, 2.0, 3.0, 4.0, 5.0},
+                {0.0, 1.0, 2.0, 3.0, 4.0},
+                {0.0, 0.0, 2.0, 2.0, 3.0},
+                {0.0, 0.0, 0.0, 3.0, 2.0},
+                {0.0, 0.0, 0.0, 0.0, 4.0},
+        };
+        Double[][] y1 = new Double[][]{
+                {2.0},
+                {8.0},
+                {8.0},
+                {8.0},
+                {8.0},
+        };
+
+
+        MojaMacierz<Double> m3 = new MojaMacierz<>(arr1, Double.class);
+        MojeRownanie<Double> r1 = new MojeRownanie<>(m3, y1, Double.class);
+        r1.switchCol(3,4);
+        for (Double[] row : r1.getValues()){
+            System.out.println(Arrays.toString(row));
+        };
+    }
 
 
 }

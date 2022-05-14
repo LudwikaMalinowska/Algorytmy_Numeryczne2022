@@ -1,5 +1,5 @@
 public class Ulamek extends Number{
-    private long licznik;
+    private double licznik;
     private final double mianownik = Math.pow(2, 16);
 
     public Ulamek(long licznik) {
@@ -12,7 +12,7 @@ public class Ulamek extends Number{
     }
 
     public long getLicznik() {
-        return licznik;
+        return (long) licznik;
     }
 
     public long getMianownik() {
@@ -38,4 +38,5 @@ public class Ulamek extends Number{
     public double doubleValue() {
         return (double) (licznik / mianownik);
     }
+
 }

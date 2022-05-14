@@ -849,7 +849,7 @@ public class TestMacierz {
         TestMacierz testMacierz = new TestMacierz();
 
 //        testMacierz.writeErrToCsv();
-        testMacierz.writeUlamekErrToCsv();
+//        testMacierz.writeUlamekErrToCsv();
 
     }
 }

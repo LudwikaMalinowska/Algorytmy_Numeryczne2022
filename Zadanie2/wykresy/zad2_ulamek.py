@@ -16,5 +16,5 @@ plt.plot(table["size"], table["errGaussFGUlamek"],
 plt.legend(loc="upper left")
 # plt.ylim(-0.01, 0.01)
 # plt.xlim(400, 500)
-# plt.yscale("log")
+plt.yscale("log")
 plt.show()
