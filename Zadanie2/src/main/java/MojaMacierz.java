@@ -45,6 +45,8 @@ public class MojaMacierz<T extends Number> {
             for (int j = 0; j < values[0].length; j++){
                 result[i][j] = convertToType(clazz,String.valueOf(values[i][j].doubleValue()
                         + other[i][j].doubleValue()));
+//                values[i][j].add(other[i][j]);
+//                result[i][j] = convertToType(clazz,String.valueOf(values[i][j]));
             }
         }
 
@@ -164,6 +166,6 @@ public class MojaMacierz<T extends Number> {
         };
         Double[] b3 = new Double[]{2.0, 8.0};
 
-        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7, Double.class);
+//        MojaMacierz<Double> m1 = new MojaMacierz<>(arr7, Double.class);
     }
 }

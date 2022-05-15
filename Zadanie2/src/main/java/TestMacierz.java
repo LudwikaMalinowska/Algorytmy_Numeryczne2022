@@ -303,7 +303,7 @@ public class TestMacierz {
         double pow2 = Math.pow(2, 16);
         for (int i = 0; i < arr2.length; i++){
             for (int j = 0; j < arr2[0].length; j++){
-                long val = (long) (arr1[i][j] * pow2);
+                double val = (arr1[i][j] * pow2);
                 arr2[i][j] = new Ulamek(val);
             }
         }
@@ -748,7 +748,7 @@ public class TestMacierz {
             bw.write(sb.toString());
             sb.setLength(0);
 
-            for (int i = 25; i <= 500; i+=25){
+            for (int i = 25; i <= 200; i+=25){
                 String s1 = floatGaussError(i);
                 String s2 = doubleGaussError(i);
                 System.out.println(i);
@@ -848,8 +848,9 @@ public class TestMacierz {
 
         TestMacierz testMacierz = new TestMacierz();
 
-//        testMacierz.writeErrToCsv();
+        testMacierz.writeErrToCsv();
 //        testMacierz.writeUlamekErrToCsv();
+//        testMacierz.ulamekGaussError(10);
 
     }
 }

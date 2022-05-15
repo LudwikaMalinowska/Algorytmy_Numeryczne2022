@@ -360,3 +360,4 @@ public class MojeRownanie<T extends Number> {
 
 
 }
+
